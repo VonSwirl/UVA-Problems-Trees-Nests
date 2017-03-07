@@ -47,6 +47,9 @@
     (+ (sum-tree (first tree)) (sum-tree (rest tree)) (inc n)) ;Otherwise add the first to the tree to the last of the tree
     )))
 
+(defn addx [v]
+  (+ v 5))
+
 ;--- TO DO LIST ---
 ;Create a function that gets the sum and the count in 1 (then divides them)
 ;Find a tail recursive way for sum-tree and count-tree
