@@ -8,6 +8,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Clojure-1.8.0" level="project" />
+    <orderEntry type="library" exported="" name="Clojure-1.8.0" level="project" />
   </component>
 </module>
