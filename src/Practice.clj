@@ -165,10 +165,49 @@
 ;   :num-orders num-or
 ;   :value (value end-s start-s passng)})
 
+;(def stations {"0-1" 1
+;               :0-2  2
+;               :0-3  3
+;               :0-4  4
+;
+;               :1-2  1
+;               :1-3  2
+;               :1-4  3
+;
+;               :2-3  1
+;               :2-4  2
+;
+;               :3-4  1})
+
+;(order-value station :0-3 15)
+;
+;(defn order-value [stations passengers]
+;  ;get value from station which means its turned into its value
+;  ;then you can calculate upon it
+;
+;  (* stations passengers))
+
+
+;SOMEWHERE up here get all the orders and give them a numbers
+;(defn order-value [order station passengers]
+;get maximum order number
+;(*t passengers)
+;(decrement order and recur method)
+
+
 
 ;
+;(def testValue
+;  t1(stations :0-1) :=> 1)
+;  t2(stations :0-4) :=> 4)
+;  t3(stations :2-4) :=> 2))
+
+;(def city {"Seattle"  "cloudy"
+;           "Phoenix"  "sunny"
+;           "New York" "busy"})
 ;
-;(def order (total-s start-s end-s passng num-o)
+;
+;(defn order [total-s start-s end-s passng num-o]
 ;  (hash-map :seats total-s
 ;            :start-station start-s
 ;            :destination-station end-s
@@ -178,9 +217,9 @@
 ;            :value (order-value stations passng)
 ;            ))
 
-(def english {one 1, two 2, three 3, four 4})
-; using a map as a fn2
-; user=> ('two english); using a symbol as a fn2
+;(def english {one 1, two 2, three 3, four 4})
+;; using a map as a fn2
+;; user=> ('two english); using a symbol as a fn2
 
 
 ;(def testy (list (order 10 0 2 1 0)
