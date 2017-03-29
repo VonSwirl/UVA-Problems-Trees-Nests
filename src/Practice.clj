@@ -1,3 +1,33 @@
+;;;!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!README!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;;;HI GUYS, IVE REARRANGED THE CODE TO MAKE IT A BIT MORE UNDERSTANDABLE
+;;;PLEASE ADD YOUR CODE CONTRIBUTION TO YOUR OWN AREA SO WE CAN ALL SEE WHOS DONE WHAT.
+;;;COMMENTS ARE NEEDED TO EXPLAIN WHAT YOUR CODE DOES.
+;;;I HOPE THIS HELPS.
+;;;THE #PREVIOUS-CODE HAS BEEN MOVED THE BOTTOM OF THIS FILE SO DONT PANIC LOLZ.
+
+
+;==================================FRESH START WENDESDAY===================
+
+;..................................START ROBS ADDITION......................
+;PUT YOUR HERE
+;..................................END ROBS ADDITION........................
+
+
+;..................................START REECES ADDITION....................
+; PUT YOUR CODE HERE
+;..................................END REECES ADDITION......................
+
+
+;..................................START MAGGIES ADDITION...................
+; PUT YOUR CODE HERE
+;..................................END MAGGIE ADDITION......................
+
+
+;..................................START JAYS ADDITION......................
+; PUT YOUR CODE HERE
+;..................................END JAYS ADDITION........................
+
+;=================================HISTORIC==================================
 ; (ns Practice)
 ;(def english
 ;  '{one 1, two 2, three 3, four 4})
@@ -135,68 +165,34 @@
 ;   :num-orders num-or
 ;   :value (value end-s start-s passng)})
 
-(def stations {"0-1" 1
-               :0-2  2
-               :0-3  3
-               :0-4  4
-
-               :1-2  1
-               :1-3  2
-               :1-4  3
-
-               :2-3  1
-               :2-4  2
-
-               :3-4  1})
-
-;(order-value station :0-3 15)
-;
-(defn order-value [stations passengers]
-  ;get value from station which means its turned into its value
-  ;then you can calculate upon it
-  
-  (* stations passengers))
-
-
-;SOMEWHERE up here get all the orders and give them a numbers
-;(defn order-value [order station passengers]
-;get maximum order number
-;(*t passengers)
-;(decrement order and recur method)
-
-
 
 ;
-;(def testValue
-;  t1(stations :0-1) :=> 1)
-;  t2(stations :0-4) :=> 4)
-;  t3(stations :2-4) :=> 2))
-
-;(def city {"Seattle"  "cloudy"
-;           "Phoenix"  "sunny"
-;           "New York" "busy"})
 ;
-;
-;(defn order [total-s start-s end-s passng num-o]
+;(def order (total-s start-s end-s passng num-o)
 ;  (hash-map :seats total-s
 ;            :start-station start-s
 ;            :destination-station end-s
 ;            :passengers passng
 ;            :num-orders num-o
 ;            ;:empty-seats (avail-seats total-s passng)
-;            :value (value end-s start-s passng)
+;            :value (order-value stations passng)
 ;            ))
-;
+
+(def english {one 1, two 2, three 3, four 4})
+; using a map as a fn2
+; user=> ('two english); using a symbol as a fn2
+
+
 ;(def testy (list (order 10 0 2 1 0)
-;                 ;(order 10 1 3 5 0)
-;                 ;(order 10 1 2 7 0)
-;                 ;(order 10 2 3 10 0)
-;                 ;(order 10 3 4 2 0)
-;                 ;(order 10 2 6 12 0)
-;                 ;(order 10 3 5 10 0)
-;                 ;(order 10 1 5 2 0)
-;                 ;(order 10 4 5 4 0)
-;                 ;(order 10 2 3 3 0)
+;                 (order 10 1 3 5 0)
+;                 (order 10 1 2 7 0)
+;                 (order 10 2 3 10 0)
+;                 (order 10 3 4 2 0)
+;                 (order 10 2 6 12 0)
+;                 (order 10 3 5 10 0)
+;                 (order 10 1 5 2 0)
+;                 (order 10 4 5 4 0)
+;                 (order 10 2 3 3 0)
 ;                 ))
 
 ;(select-keys {order} [:value :passengers])
