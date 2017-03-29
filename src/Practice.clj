@@ -24,7 +24,39 @@
 
 
 ;..................................START JAYS ADDITION......................
-; PUT YOUR CODE HERE
+
+
+(def lots-of-orders
+  "Defines a map of orders"
+  '{:order-list
+    {:order1  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
+     :order2  {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
+     :order3  {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
+     :order4  {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
+     :order5  {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
+     :order6  {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
+     :order7  {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
+     :order8  {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
+     :order9  {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
+     :order10 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
+     }})
+;RUN
+;(-> lots-of-orders :order-list :order1 :passengers)
+;(-> lots-of-orders :order-list :order1 :seats)
+
+
+(defn run-test-lots-of-orders []
+  "Runs a test on the map"
+  (-> lots-of-orders :order-list :order1 :passengers)
+  ;   ;(-> lots-of-orders :order-list :order1 :seats)
+  ;   ;(-> lots-of-orders :order-list :order1 :stop)
+  ;   ;(-> lots-of-orders :order-list :order1 :passengers)
+  ;   ;(-> lots-of-orders :order-list :order1 :passengers)
+  ;
+  )
+
+
+
 ;..................................END JAYS ADDITION........................
 
 ;=================================HISTORIC==================================
