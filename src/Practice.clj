@@ -25,9 +25,6 @@
 
 ;..................................START JAYS ADDITION......................
 
-
-;-----------------------------
-
 (def lots-of-orders-map
   "Defines a simple map of orders"
   '{:order1  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
@@ -49,10 +46,10 @@
 (-> lots-of-orders-map :order4 :passengers)
 (-> lots-of-orders-map :order5 :order-num)
 ;Test Successful
-;----------------------------------
+;--------------------------------------------------------------------------
 
-(def lots-of-orders-hash
-  "Defines a hash-map of orders"
+(def lots-of-orders-hash-v1
+  "Defines a hash-map of orders version 1"
   {:order1  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
    :order2  {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
    :order3  {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
@@ -66,23 +63,82 @@
    })
 ;TEST
 ;Copy block below to REPL to test lots-of-orders-hash
-(-> lots-of-orders-hash :order1 :seats)
-(-> lots-of-orders-hash :order2 :start)
-(-> lots-of-orders-hash :order3 :stop)
-(-> lots-of-orders-hash :order4 :passengers)
-(-> lots-of-orders-hash :order5 :order-num)
+(-> lots-of-orders-hash-v1 :order1 :seats)
+(-> lots-of-orders-hash-v1 :order2 :start)
+(-> lots-of-orders-hash-v1 :order3 :stop)
+(-> lots-of-orders-hash-v1 :order4 :passengers)
+(-> lots-of-orders-hash-v1 :order5 :order-num)
 ;Test Successful
-;---------------------------------
+;---------------------------------------------------------------------------
 
-(defn run-test-lots-of-orders []
-  "trying to create a test function but failed"
-  (-> lots-of-orders-map :order1 :passengers)
-  (-> lots-of-orders-map :order1 :seats)
-  (-> lots-of-orders-map :order1 :stop)
-  (-> lots-of-orders-map :order1 :start)
-  (-> lots-of-orders-map :order1 :order-num)
-  )
+(def lots-of-orders-hash-v2
+  "Defines a hash-map of orders version 2"
+  (hash-map :order1 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
+            :order2 {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
+            :order3 {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
+            :order4 {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
+            :order5 {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
+            :order6 {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
+            :order7 {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
+            :order8 {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
+            :order9 {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
+            :order10 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
+            ))
+;TEST
+;Copy block below to REPL to test lots-of-orders-hash
+(-> lots-of-orders-hash-v2 :order1 :seats)
+(-> lots-of-orders-hash-v2 :order2 :start)
+(-> lots-of-orders-hash-v2 :order3 :stop)
+(-> lots-of-orders-hash-v2 :order4 :passengers)
+(-> lots-of-orders-hash-v2 :order5 :order-num)
+;Test Successful
+;---------------------------------------------------------------------------
+
+(def stations
+  "Robs defined stations and corresponding values"
+  {
+   :0-1 1 :0-2 2 :0-3 3 :0-4 4                              ;station 0 values
+   :1-2 1 :1-3 2 :1-4 3                                     ;station 1 values
+   :2-3 1 :2-4 2                                            ;station 2 values
+   :3-4 1                                                   ;station 3 values
+   })
+
+
+(defn order-value [stations passengers]
+  "get value from station which means its
+  turned into its value then you can calculate upon it"
+  (* stations passengers))
+;TEST
+;Copy block below to REPL to test order-value
+(order-value (stations :1-4) 5)
+(order-value (stations :0-3) 15)
+(order-value (stations :2-4) 1)
+;Test Successful
+;---------------------------------------------------------------------------
+
+
+;SOMEWHERE up here get all the orders and give them a numbers
+;(defn order-value [order station passengers]
+;get maximum order number
+;(*t passengers)
+;(decrement order and recur method)
+
+
+
+;
+;(def testValue
+;  t1(stations :0-1) :=> 1)
+;  t2(stations :0-4) :=> 4)
+;  t3(stations :2-4) :=> 2))
+
 ;..................................END JAYS ADDITION........................
+
+
+
+
+
+
+
 
 ;=================================HISTORIC==================================
 ; (ns Practice)
@@ -136,23 +192,6 @@
 
 ;;(order-earnings 6 0 10)
 ;;=> 60
-;;#(:a "bla" :b "test")
-;;=> #object[user$eval1959$fn__1960 0x43bc3621 "user$eval1959$fn__1960@43bc3621"]
-;;(def ar #(:a "fjdk"))
-;;=> #'user/ar
-;;(get ar :a)
-;;=> nil
-;;(ar)
-;;=> nil
-;;ar
-;;=> #object[user$ar 0x9593557 "user$ar@9593557"]
-;;(get #(:a "fjdlk") :a)
-;;=> nil
-;;(get (hash-map :a "fjdlk") :a)
-;;=> "fjdlk"
-;
-;
-;
 ;  (defn order [max-passengers end-station start-station num-orders num-passengers]
 ;    (hash-map :max-pass max-passengers
 ;              :end-stat end-station
@@ -185,9 +224,6 @@
 ;    {:num-pass 1, :value 4, :end-stat 6, :start-stat 2, :max-pass 20, :num-ord 1})
 ;  (map #(get % :value) testy)
 ;  => (12 4)
-
-
-
 
 ;(defn order [total-s new-p start-s end-s num-o]
 ;  (hash-map :seats total-s
