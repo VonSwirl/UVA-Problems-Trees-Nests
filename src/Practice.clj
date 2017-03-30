@@ -9,7 +9,7 @@
 
 (defn make-order [start end passengers]
   (hash-map :start start :end end :pass passengers :value (* (- end start) passengers)))
-
+;Creates a map start, end (station) and number of passengers. Also contains a function to calculate value.
 
 (def orders
   (list (make-order 0 2 1)
@@ -17,29 +17,38 @@
         (make-order 1 3 5)
         (make-order 1 2 7)
         (make-order 2 3 10)))
+;Creates mock orders
 
-(def test-order (make-order 2 3 10))
+;(def test-order (make-order 2 3 10))
 
-(defn state [current-station max-capacity]
+(defn state [current-station max-capacity end-station]
   (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
-            :route cons current-station () :current-passengers '()))
+    :route cons current-station () :route-end cons end-station () :current-passengers '()))
+;Defines the curent state of station, capacity, route and passengers onboard. To work out passenger calculations
 
 ;(defn solution [start end capacity ] (let [initial-state (state start capacity)])
 
-(defn move [current-state new-order]
+(defn move [current-state new-order end-station]
   (do
     (update current-state :station inc)
+    (update current-state :current-capacity (- (get current-state :curent-capacity) (get end-station :pass)))
     (update current-state :current-capacity (+ (get current-state :current-capacity) (get new-order :pass)))
-    (update current-state :current-passengers new-order)
-    ()
-
+    (update current-state :current-passengers new-order) ()
     current-state ()
     ))
+;Update after each station firstly incrementing the station mumber, checking of any passengers get off
+;then on and finally going to the new order
 
 (defn lmg [state order]
-  (recur (map #(move state %) (filter #(= (get % :start) (get state :station)) order)) order)
+  (filter #(= (get % :start) (get state :station)) order))
+;filters to get the start station, checking what stations the orders belong to
 
-  (def start-state (state 0 10))
+(defn current-check [state]
+  (recur (map #(move state %) order)))
+;Needs to  recursively stage through the stations and implement the lmg and move function for update
+
+;(def start-state (state 0 10))
+;basecase to be used for testing 
   ;...................................................
 
   (def orders-map
