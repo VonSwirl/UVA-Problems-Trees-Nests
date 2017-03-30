@@ -1,32 +1,31 @@
-;;;!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!README!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-;;;HI GUYS, IVE REARRANGED THE CODE TO MAKE IT A BIT MORE UNDERSTANDABLE
-;;;PLEASE ADD YOUR CODE CONTRIBUTION TO YOUR OWN AREA SO WE CAN ALL SEE WHOS DONE WHAT.
-;;;COMMENTS ARE NEEDED TO EXPLAIN WHAT YOUR CODE DOES.
-;;;I HOPE THIS HELPS.
-;;;THE #PREVIOUS-CODE HAS BEEN MOVED THE BOTTOM OF THIS FILE SO DONT PANIC LOLZ.
+;;;!!!!!!!!!!!!!!!!!!!!!!!!!!!!!PLEASE README!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;;; HI GUYS, IVE REARRANGED THE CODE TO MAKE IT A BIT MORE UNDERSTANDABLE
+;;; PLEASE ADD YOUR CODE CONTRIBUTION TO YOUR OWN AREA SO WE CAN ALL SEE
+;;; WHOS DONE WHAT. COMMENTS ARE NEEDED TO EXPLAIN WHAT YOUR CODE DOES.
+;;; I HOPE THIS HELPS. THE #PREVIOUS-CODE HAS BEEN MOVED THE BOTTOM OF THIS
+;;; FILE SO DONT PANIC LOLZ. DONT CUT/REMOVE ANYONE ELSES WORK JUST
+;;; COMMENT/UNCOMMENT THE BLOCK OF CODE IF YOU COME ACROSS CONFLICTING
+;;; DEF/DEFN NAMES.
+
+;................................START   ROBS    ADDITION...................
+;ADD YOUR CODE HERE
+;..................................END   ROBS    ADDITION...................
 
 
-;==================================FRESH START WENDESDAY===================
-
-;..................................START ROBS ADDITION......................
-;PUT YOUR HERE
-;..................................END ROBS ADDITION........................
+;................................START   REECES  ADDITION...................
+;ADD YOUR CODE HERE
+;..................................END   REECES  ADDITION...................
 
 
-;..................................START REECES ADDITION....................
-; PUT YOUR CODE HERE
-;..................................END REECES ADDITION......................
+;................................START   MAGGIES ADDITION...................
+;ADD YOUR CODE HERE
+;..................................END   MAGGIE  ADDITION...................
 
 
-;..................................START MAGGIES ADDITION...................
-; PUT YOUR CODE HERE
-;..................................END MAGGIE ADDITION......................
+;................................START   JAYS    ADDITION...................
 
-
-;..................................START JAYS ADDITION......................
-
-(def lots-of-orders-map
-  "Defines a simple map of orders"
+(def orders-map
+  "Defines a map of orders"
   '{:order1  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
     :order2  {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
     :order3  {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
@@ -38,18 +37,20 @@
     :order9  {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
     :order10 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
     })
+
 ;TEST
 ;Copy block below to REPL to test lots-of-orders-map
-(-> lots-of-orders-map :order1 :seats)
-(-> lots-of-orders-map :order2 :start)
-(-> lots-of-orders-map :order3 :stop)
-(-> lots-of-orders-map :order4 :passengers)
-(-> lots-of-orders-map :order5 :order-num)
+(type orders-map)
+(-> orders-map :order1 :seats)
+(-> orders-map :order2 :start)
+(-> orders-map :order3 :stop)
+(-> orders-map :order4 :passengers)
+(-> orders-map :order5 :order-num)
 ;Test Successful
 ;--------------------------------------------------------------------------
 
-(def lots-of-orders-hash-v1
-  "Defines a hash-map of orders version 1"
+(def orders-hash-v1
+  "Defines a hash-map of orders. Version 1"
   {:order1  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
    :order2  {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
    :order3  {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
@@ -61,18 +62,20 @@
    :order9  {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
    :order10 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
    })
+
 ;TEST
-;Copy block below to REPL to test lots-of-orders-hash
-(-> lots-of-orders-hash-v1 :order1 :seats)
-(-> lots-of-orders-hash-v1 :order2 :start)
-(-> lots-of-orders-hash-v1 :order3 :stop)
-(-> lots-of-orders-hash-v1 :order4 :passengers)
-(-> lots-of-orders-hash-v1 :order5 :order-num)
+;Copy block below to REPL to test orders-hash v1
+(type orders-hash-v1)
+(-> orders-hash-v1 :order1 :seats)
+(-> orders-hash-v1 :order2 :start)
+(-> orders-hash-v1 :order3 :stop)
+(-> orders-hash-v1 :order4 :passengers)
+(-> orders-hash-v1 :order5 :order-num)
 ;Test Successful
 ;---------------------------------------------------------------------------
 
-(def lots-of-orders-hash-v2
-  "Defines a hash-map of orders version 2"
+(def orders-hash-v2
+  "Defines a hash-map of orders. Version 2"
   (hash-map :order1 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
             :order2 {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
             :order3 {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
@@ -84,13 +87,58 @@
             :order9 {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
             :order10 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
             ))
+
 ;TEST
-;Copy block below to REPL to test lots-of-orders-hash
-(-> lots-of-orders-hash-v2 :order1 :seats)
-(-> lots-of-orders-hash-v2 :order2 :start)
-(-> lots-of-orders-hash-v2 :order3 :stop)
-(-> lots-of-orders-hash-v2 :order4 :passengers)
-(-> lots-of-orders-hash-v2 :order5 :order-num)
+;Copy block below to REPL to test orders-hash v2
+(type orders-hash-v2)
+(-> orders-hash-v2 :order1 :seats)
+(-> orders-hash-v2 :order2 :start)
+(-> orders-hash-v2 :order3 :stop)
+(-> orders-hash-v2 :order4 :passengers)
+(-> orders-hash-v2 :order5 :order-num)
+;Test Successful
+;---------------------------------------------------------------------------
+
+(def orders-hash-oversize
+  "Defines a hash-map of orders that is over the size limit for testing"
+  (hash-map :order1 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
+            :order2 {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
+            :order3 {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
+            :order4 {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
+            :order5 {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
+            :order6 {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
+            :order7 {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
+            :order8 {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
+            :order9 {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
+            :order10 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
+            :order11 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 11}
+            :order12 {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 12}
+            :order13 {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 13}
+            :order14 {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 14}
+            :order15 {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 15}
+            :order16 {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 16}
+            :order17 {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 17}
+            :order18 {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 18}
+            ))
+
+;TEST
+;Copy block below to REPL to test orders-hash-oversized
+(type orders-hash-oversize)
+(-> orders-hash-oversize :order1 :seats)
+(-> orders-hash-oversize :order2 :start)
+(-> orders-hash-oversize :order3 :stop)
+(-> orders-hash-oversize :order4 :passengers)
+(-> orders-hash-oversize :order5 :order-num)
+;Test Successful
+;---------------------------------------------------------------------------
+
+(def orders-hash-empty
+  "Here is an empty hashmap for test purposes"
+  (hash-map))
+
+;TEST
+;Copy block below to REPL to test orders-hash-empty
+
 ;Test Successful
 ;---------------------------------------------------------------------------
 
@@ -105,9 +153,10 @@
 
 
 (defn order-value [stations passengers]
-  "get value from station which means its
-  turned into its value then you can calculate upon it"
+  "Functions uses the above define stations to get the order value by
+   (station stops * passenger count)"
   (* stations passengers))
+
 ;TEST
 ;Copy block below to REPL to test order-value
 (order-value (stations :1-4) 5)
@@ -116,31 +165,112 @@
 ;Test Successful
 ;---------------------------------------------------------------------------
 
+(defn is-order-empty [map-we-give]
+  "Helper function to validate that the given map/hashmap etc..
+  if it contains 0 orders/values false is returned else true"
+  (every? empty? [map-we-give]))
 
-;SOMEWHERE up here get all the orders and give them a numbers
-;(defn order-value [order station passengers]
-;get maximum order number
-;(*t passengers)
-;(decrement order and recur method)
+;TEST
+;Copy block below to REPL to test order-empty
+(is-order-empty orders-hash-empty)                          ;true
+(is-order-empty orders-hash-oversize)                       ;false
+(is-order-empty orders-hash-empty)                          ;true
+(is-order-empty orders-hash-v1)                             ;false
+(is-order-empty orders-hash-empty)                          ;true
+(is-order-empty orders-hash-v2)                             ;false
+(is-order-empty orders-hash-empty)                          ;true
+;Test Successful
+;---------------------------------------------------------------------------
 
+(defn is-order-within-size [map-we-give]
+  "Helper function to validate that the given map/hashmap etc..
+   does not exceed the maximum of 17. true is returned if it is within the limit
+    else false"
+  (<= (count map-we-give) 17))
 
+;TEST
+;Copy block below to REPL to test order-oversize
+(is-order-within-size orders-hash-empty)                    ;true
+(is-order-within-size orders-map)                           ;true
+(is-order-within-size orders-hash-oversize)                 ;false
+(is-order-within-size orders-hash-v1)                       ;true
+(is-order-within-size orders-hash-oversize)                 ;false
+(is-order-within-size orders-hash-v2)                       ;true
+(is-order-within-size orders-hash-oversize)                 ;false
+;Test Successful
+;---------------------------------------------------------------------------
 
-;
-;(def testValue
-;  t1(stations :0-1) :=> 1)
-;  t2(stations :0-4) :=> 4)
-;  t3(stations :2-4) :=> 2))
+;;defn is-order-empty and defn is-order-within-size can easily be combine to form
+;;one single validation fn. repeated creation is purely just experimenting and is there
+;;as a visual aid. I know i havent solved the solution at all or even attempted it but
+;;im hoping the functions i have created will help you gets out.
+;;Its bed time for me. Keep me
+;;updated with the progress tomorrow please guys....thanks Jay
 
+;;P.S when i run copy and paste the entire file to the repl
+;;I get this returned SEE BELOW.
+
+;;=> #'user/orders-map
+;=> clojure.lang.PersistentHashMap
+;=> 10
+;=> 1
+;=> 2
+;=> 10
+;=> 5
+;=> #'user/orders-hash-v1
+;=> clojure.lang.PersistentHashMap
+;=> 10
+;=> 1
+;=> 2
+;=> 10
+;=> 5
+;=> #'user/orders-hash-v2
+;=> clojure.lang.PersistentHashMap
+;=> 10
+;=> 1
+;=> 2
+;=> 10
+;=> 5
+;=> #'user/orders-hash-oversize
+;=> clojure.lang.PersistentHashMap
+;=> 10
+;=> 1
+;=> 2
+;=> 10
+;=> 5
+;=> #'user/orders-hash-empty
+;=> #'user/stations
+;=> #'user/order-value
+;=> 15
+;=> 45
+;=> 2
+;=> #'user/is-order-empty
+;=> true
+;=> false
+;=> true
+;=> false
+;=> true
+;=> false
+;=> true
+;=> #'user/is-order-within-size
+;=> true
+;=> true
+;=> false
+;=> true
+;=> false
+;=> true
+;=> false
 ;..................................END JAYS ADDITION........................
 
 
 
 
+;aahhh WHITESPACE!
 
 
 
 
-;=================================HISTORIC==================================
+;==================================HISTORIC EFFORT==========================
 ; (ns Practice)
 ;(def english
 ;  '{one 1, two 2, three 3, four 4})
