@@ -7,24 +7,67 @@
 ;;; COMMENT/UNCOMMENT THE BLOCK OF CODE IF YOU COME ACROSS CONFLICTING
 ;;; DEF/DEFN NAMES.
 
-;................................START   ROBS    ADDITION...................
-;ADD YOUR CODE HERE
-;..................................END   ROBS    ADDITION...................
+(defn make-order [start end passengers]
+  (hash-map :start start :end end :pass passengers :value (* (- end start) passengers)))
 
 
-;................................START   REECES  ADDITION...................
-;ADD YOUR CODE HERE
-;..................................END   REECES  ADDITION...................
+(def orders
+  (list (make-order 0 2 1)
+        (make-order 0 3 1)
+        (make-order 1 3 5)
+        (make-order 1 2 7)
+        (make-order 2 3 10)))
 
+(def test-order (make-order 2 3 10))
 
-;................................START   MAGGIES ADDITION...................
-;ADD YOUR CODE HERE
-;..................................END   MAGGIE  ADDITION...................
+(defn state [current-station max-capacity]
+  (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
+            :route cons current-station () :current-passengers '()))
 
+;(defn solution [start end capacity ] (let [initial-state (state start capacity)])
 
-;................................START   JAYS    ADDITION...................
+(defn move [current-state new-order]
+  (do
+    (update current-state :station inc)
+    (update current-state :current-capacity (+ (get current-state :current-capacity) (get new-order :pass)))
+    (update current-state :current-passengers new-order)
+    ()
 
-(def orders-map
+    current-state ()
+    ))
+
+(defn lmg [state order]
+  (recur (map #(move state %) (filter #(= (get % :start) (get state :station)) order)) order)
+
+  (def start-state (state 0 10))
+  ;...................................................
+
+  (def orders-map
+    "Defines a map of orders"
+    '{:station0 {:order0 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
+                 :order1 {:seats 10 :start 0 :stop 3 :passengers 5 :order-num 2}
+                 }
+      :station1 {:order0 {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
+                 :order1 {:seats 10 :start 1 :stop 3 :passengers 10 :order-num 4}
+                 }
+      :station2 {:order0 {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
+                 ;:order1  {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
+                 }
+      :station3 {:order0 {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
+                 :order1 {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
+                 }
+      :station4 {:order0 {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
+                 :order1 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
+                 }})
+  ;
+  ;(defn cap-check [orders current-capacity max-capacity])
+  ;(if (curent-capacity? == max-capacity)
+  ;  (false)
+  ;  (recur (inc orders ))
+  ;  )
+  ;................................START   JAYS    ADDITION...................
+
+  (def orders2
   "Defines a map of orders"
   '{:order1  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
     :order2  {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
@@ -133,7 +176,7 @@
 ;---------------------------------------------------------------------------
 
 (def orders-hash-empty
-  "Here is an empty hashmap for test purposes"
+  "Empty hashmap for test purposes"
   (hash-map))
 
 ;TEST
@@ -143,7 +186,7 @@
 ;---------------------------------------------------------------------------
 
 (def stations
-  "Robs defined stations and corresponding values"
+  "defined stations and corresponding values"
   {
    :0-1 1 :0-2 2 :0-3 3 :0-4 4                              ;station 0 values
    :1-2 1 :1-3 2 :1-4 3                                     ;station 1 values
@@ -199,7 +242,24 @@
 (is-order-within-size orders-hash-oversize)                 ;false
 ;Test Successful
 ;---------------------------------------------------------------------------
+  ;---------------------------------------------------------------------------
+  ;---------------------------------------------------------------------------
 
+  ;(defn order [start stop num-orders passengers]
+  ;   (hash-map :max-pass seats
+  ;            :end-stat stop
+  ;           :start-stat start
+  ;          :num-ord order-num
+  ;         :num-pass passengers
+  ;        :value (order-earnings stop start passengers)
+  ;      ))
+
+
+
+
+
+
+  ;---------------------------------------------------------------------------
 ;;defn is-order-empty and defn is-order-within-size can easily be combine to form
 ;;one single validation fn. repeated creation is purely just experimenting and is there
 ;;as a visual aid. I know i havent solved the solution at all or even attempted it but
