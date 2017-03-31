@@ -1,0 +1,89 @@
+
+(+ 1 1)
+=> 2
+(defn make-order [start end passengers]
+  "Creates a map start, end (station) and number of passengers.
+  Also contains a function to calculate value."
+  (hash-map :start start :end end :pass passengers :value (* (- end start) passengers)))
+=> #'user/make-order
+(def orders
+  "Creates mock orders"
+  (list (make-order 0 2 1)
+        (make-order 0 3 1)
+        (make-order 1 3 5)
+        (make-order 1 2 7)
+        (make-order 2 3 10)))
+=> #'user/orders
+(def start-state (state 0 10))
+
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: state in this context, compiling:(C:\Users\DeepThought2\AppData\Local\Temp\form-init5258576972030610879.clj:1:18) 
+(defn state [current-station max-capacity end-station]
+  "Defines the current state of station, capacity, route and passengers onboard. To work out passenger calculations"
+  (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
+            :route cons current-station () :route-end cons end-station () :current-passengers '()))
+=> #'user/state
+(def start-state (state 0 10))
+CompilerException clojure.lang.ArityException: Wrong number of args (2) passed to: user/state, compiling:(form-init5258576972030610879.clj:1:18) 
+(def start-state (state 0 10 4))
+=> #'user/start-state
+(start-state)
+ArityException Wrong number of args (0) passed to: PersistentHashMap  clojure.lang.AFn.throwArity (AFn.java:429)
+start-state
+=>
+{0 (),
+ :station 0,
+ 4 (),
+ :value 0,
+ :current-capacity 0,
+ :route #object[clojure.core$cons__4331 0x98ef7e7 "clojure.core$cons__4331@98ef7e7"],
+ :route-end #object[clojure.core$cons__4331 0x98ef7e7 "clojure.core$cons__4331@98ef7e7"],
+ :current-passengers (),
+ :max-capacity 10}
+(defn i-filter-stuff [state order]
+  (filter #(= (get % :start) (get state :station)) order))
+=> #'user/i-filter-stuff
+(i-filter-stuff start-state orders)
+=> ({:value 2, :start 0, :pass 1, :end 2} {:value 3, :start 0, :pass 1, :end 3})
+(defn state [current-station max-capacity end-station]
+  "Defines the current state of station, capacity, route and passengers onboard. To work out passenger calculations"
+  (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
+            :route cons current-station () :route-end  end-station :current-passengers '()))
+=> #'user/state
+(def start-state (state 0 10 4))
+=> #'user/start-state
+start-state
+=>
+{0 (),
+ :station 0,
+ :value 0,
+ :current-capacity 0,
+ :route #object[clojure.core$cons__4331 0x98ef7e7 "clojure.core$cons__4331@98ef7e7"],
+ :route-end 4,
+ :current-passengers (),
+ :max-capacity 10}
+(defn state [current-station max-capacity end-station]
+  "Defines the current state of station, capacity, route and passengers onboard. To work out passenger calculations"
+  (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
+            :route (cons current-station '()) :route-end  end-station :current-passengers '()))
+=> #'user/state
+(def start-state (state 0 10 4))
+=> #'user/start-state
+start-state
+=> {:station 0, :value 0, :current-capacity 0, :route (0), :route-end 4, :current-passengers (), :max-capacity 10}
+(i-filter-stuff start-state orders)
+=> ({:value 2, :start 0, :pass 1, :end 2} {:value 3, :start 0, :pass 1, :end 3})
+(update current-state :station inc)
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: current-state in this context, compiling:(C:\Users\DeepThought2\AppData\Local\Temp\form-init5258576972030610879.clj:1:1) 
+(update start-state :station inc)
+=> {:station 1, :value 0, :current-capacity 0, :route (0), :route-end 4, :current-passengers (), :max-capacity 10}
+(def start-state (make-state 1 10 4))
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: make-state in this context, compiling:(C:\Users\DeepThought2\AppData\Local\Temp\form-init5258576972030610879.clj:1:18) 
+(defn  make-state [current-station max-capacity end-station]
+  "Defines the current state of station, capacity, route and passengers onboard. To work out passenger calculations"
+  (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
+            :route (cons current-station '()) :route-end  end-station :current-passengers '()))
+=> #'user/make-state
+(def start-state (make-state 1 10 4))
+=> #'user/start-state
+(i-filter-stuff start-state orders)
+=> ({:value 10, :start 1, :pass 5, :end 3} {:value 7, :start 1, :pass 7, :end 2})
