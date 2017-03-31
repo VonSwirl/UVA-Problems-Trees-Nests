@@ -2,16 +2,16 @@
 
 (defn breadth-search
   [start goal lmg & {:keys [debug compare]
-                     :or   {debug   false
-                            compare =}}]
+                     :or {debug false
+                          compare =}}]
   (let [goal? (if (fn? goal)
                 #(when (goal %) %)
                 #(when (= % goal) %))
         ]
     ;; a daft check but required just in case
     (or (goal? start)
-        (breadth-search- `((~start)) goal? lmg compare debug)
-        )))
+      (breadth-search- `((~start)) goal? lmg compare debug)
+      )))
 
 (defn breadth-search- [waiting goal? lmg compare debug]
   (let [member? (fn [lis x] (some (partial compare x) lis))
@@ -22,19 +22,19 @@
            visited visited
            ]
       (if (empty? waiting) nil
-                           (let [[next & waiting] waiting
-                                 [state & path] next
-                                 visited? (partial member? visited)
-                                 ]
-                             (if (visited? state)
-                               (recur waiting visited)
-                               (let [succs (remove visited? (lmg state))
-                                     g (some goal? succs)
-                                     ]
-                                 (if g (reverse (cons g next))
-                                       (recur (concat waiting (map #(cons % next) succs))
-                                              (cons state visited)))
-                                 )))))))
+        (let [[next & waiting] waiting
+              [state & path] next
+              visited? (partial member? visited)
+              ]
+          (if (visited? state)
+            (recur waiting visited)
+            (let [succs (remove visited? (lmg state))
+                  g (some goal? succs)
+                  ]
+              (if g (reverse (cons g next))
+                (recur (concat waiting (map #(cons % next) succs))
+                  (cons state visited)))
+              )))))))
 
 (def orders-hash-v2
   "Defines a hash-map of orders. Version 2"
@@ -82,178 +82,203 @@
   Also contains a function to calculate value."
   (hash-map :start start :end end :pass passengers :value (* (- end start) passengers)))
 
-(def orders
-  "Creates mock orders"
-  (list (make-order 0 2 1)
-        (make-order 0 3 1)
-        (make-order 1 3 5)
-        (make-order 1 2 7)
-        (make-order 2 3 10)))
 
-;(def test-order (make-order 2 3 10))
-
-(defn state [current-station max-capacity end-station]
-  "Defines the current state of station, capacity, route and passengers onboard. To work out passenger calculations"
-  (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
-            :route cons current-station () :route-end cons end-station () :current-passengers '()))
-
-;(defn solution [start end capacity ] (let [initial-state (state start capacity)])
-
-(defn move [current-state new-order end-station]
-  "Update after each station firstly incrementing the station mumber,
-   checking of any passengers get off\nthen on and finally going to the new order"
+(defn move [current-state new-order]
+  "has one state, can passenger get on?, can passenger get off? are we outside of bounds? sends states to map "
   (do
     (update current-state :station inc)
-    (update current-state :current-capacity (- (get current-state :curent-capacity) (get end-station :pass)))
     (update current-state :current-capacity (+ (get current-state :current-capacity) (get new-order :pass)))
-    (update current-state :current-passengers new-order) ()
+    (update current-state :current-passengers new-order)
+    ()
+
     current-state ()
     ))
 
-;(defn current-check [state]
-;  "Needs to  recursively stage through the stations and implement the lmg and move function for update"
-;  (recur (map #(move state %) order)))
+(defn lmg [state order]
+  "has a list of states"
+  (recur (map #(move state %) (filter #(= (get % :start) (get state :station)) order)) order)
 
-;(def start-state (state 0 10))
-;basecase to be used for testing 
-;...................................................
-
-(def orders-map
-  "Defines a map of orders"
-  '{:station0 {:order0 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
-               :order1 {:seats 10 :start 0 :stop 3 :passengers 5 :order-num 2}
-               }
-    :station1 {:order0 {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
-               :order1 {:seats 10 :start 1 :stop 3 :passengers 10 :order-num 4}
-               }
-    :station2 {:order0 {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
-               ;:order1  {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
-               }
-    :station3 {:order0 {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
-               :order1 {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
-               }
-    :station4 {:order0 {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
-               :order1 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
-               }})
-;
-;(defn cap-check [orders current-capacity max-capacity])
-;(if (curent-capacity? == max-capacity)
-;  (false)
-;  (recur (inc orders ))
-;  )
-;................................START   JAYS    ADDITION...................
-
-(def orders2
-  "Defines a map of orders"
-  '{:order1  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
-    :order2  {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
-    :order3  {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
-    :order4  {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
-    :order5  {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
-    :order6  {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
-    :order7  {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
-    :order8  {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
-    :order9  {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
-    :order10 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
-    })
-
-;TEST
-;Copy block below to REPL to test lots-of-orders-map
-(type orders-map)
-(-> orders-map :order1 :seats)
-(-> orders-map :order2 :start)
-(-> orders-map :order3 :stop)
-(-> orders-map :order4 :passengers)
-(-> orders-map :order5 :order-num)
-;Test Successful
-;--------------------------------------------------------------------------
-
-(def orders-hash-v1
-  "Defines a hash-map of orders. Version 1"
-  {:order1  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
-   :order2  {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
-   :order3  {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
-   :order4  {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
-   :order5  {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
-   :order6  {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
-   :order7  {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
-   :order8  {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
-   :order9  {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
-   :order10 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
-   })
-
-;TEST
-;Copy block below to REPL to test orders-hash v1
-(type orders-hash-v1)
-(-> orders-hash-v1 :order1 :seats)
-(-> orders-hash-v1 :order2 :start)
-(-> orders-hash-v1 :order3 :stop)
-(-> orders-hash-v1 :order4 :passengers)
-(-> orders-hash-v1 :order5 :order-num)
-;Test Successful
+  (def start-state (state 0 10))
 
 
-(def orders-hash-empty
-  "Empty hashmap for test purposes"
-  (hash-map))
 
-;TEST
-;Copy block below to REPL to test orders-hash-empty
+  (def orders
+    "Creates mock orders"
+    (list (make-order 0 2 1)
+      (make-order 0 3 1)
+      (make-order 1 3 5)
+      (make-order 1 2 7)
+      (make-order 2 3 10)))
 
-;Test Successful
-;---------------------------------------------------------------------------
+  ;(def test-order (make-order 2 3 10))
 
-(def stations
-  "defined stations and corresponding values"
-  {
-   :0-1 1 :0-2 2 :0-3 3 :0-4 4                              ;station 0 values
-   :1-2 1 :1-3 2 :1-4 3                                     ;station 1 values
-   :2-3 1 :2-4 2                                            ;station 2 values
-   :3-4 1                                                   ;station 3 values
-   })
+  (defn state [current-station max-capacity end-station]
+    "Defines the current state of station, capacity, route and passengers onboard. To work out passenger calculations"
+    (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
+      :route cons current-station () :route-end cons end-station () :current-passengers '()))
+
+  ;(defn solution [start end capacity ] (let [initial-state (state start capacity)])
+
+  (defn move
+    "Update after each station firstly incrementing the station mumber,
+   checking of any passengers get off\nthen on and finally going to the new order"
+    [current-state new-order end-station]
+
+    (do
+      (update current-state :station inc)
+      (update current-state :current-capacity (- (get current-state :curent-capacity) (get end-station :pass)))
+      (update current-state :current-capacity (+ (get current-state :current-capacity) (get new-order :pass)))
+      (update current-state :current-passengers new-order) ()
+      current-state ()
+      ))
+
+  ;(defn current-check [state]
+  ;  "Needs to  recursively stage through the stations and implement the lmg and move function for update"
+  ;  (recur (map #(move state %) order)))
+
+  ;(def start-state (state 0 10))
+  ;basecase to be used for testing
+  ;...................................................
+
+  (def orders-map
+    "Defines a map of orders"
+    '{:station0 {:order0 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
+                 :order1 {:seats 10 :start 0 :stop 3 :passengers 5 :order-num 2}
+                 }
+      :station1 {:order0 {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
+                 :order1 {:seats 10 :start 1 :stop 3 :passengers 10 :order-num 4}
+                 }
+      :station2 {:order0 {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
+                 ;:order1  {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
+                 }
+      :station3 {:order0 {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
+                 :order1 {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
+                 }
+      :station4 {:order0 {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
+                 :order1 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
+                 }})
+  ;
+  ;(defn cap-check [orders current-capacity max-capacity])
+  ;(if (curent-capacity? == max-capacity)
+  ;  (false)
+  ;  (recur (inc orders ))
+  ;  )
+  ;................................START   JAYS    ADDITION...................
+
+  (def orders2
+    "Defines a map of orders"
+    '{:order1 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
+      :order2 {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
+      :order3 {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
+      :order4 {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
+      :order5 {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
+      :order6 {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
+      :order7 {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
+      :order8 {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
+      :order9 {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
+      :order10 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
+      })
+
+  ;TEST
+  ;Copy block below to REPL to test lots-of-orders-map
+  (type orders-map)
+  (-> orders-map :order1 :seats)
+  (-> orders-map :order2 :start)
+  (-> orders-map :order3 :stop)
+  (-> orders-map :order4 :passengers)
+  (-> orders-map :order5 :order-num)
+  ;Test Successful
+  ;--------------------------------------------------------------------------
+
+  (def orders-hash-v1
+    "Defines a hash-map of orders. Version 1"
+    {:order1 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
+     :order2 {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
+     :order3 {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
+     :order4 {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
+     :order5 {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
+     :order6 {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
+     :order7 {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
+     :order8 {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
+     :order9 {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
+     :order10 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
+     })
+
+  ;TEST
+  ;Copy block below to REPL to test orders-hash v1
+  (type orders-hash-v1)
+  (-> orders-hash-v1 :order1 :seats)
+  (-> orders-hash-v1 :order2 :start)
+  (-> orders-hash-v1 :order3 :stop)
+  (-> orders-hash-v1 :order4 :passengers)
+  (-> orders-hash-v1 :order5 :order-num)
+  ;Test Successful
 
 
-(defn order-value [stations passengers]
-  "Functions uses the above define stations to get the order value by
-   (station stops * passenger count)"
-  (* stations passengers))
+  (def orders-hash-empty
+    "Empty hashmap for test purposes"
+    (hash-map))
 
-;TEST
-;Copy block below to REPL to test order-value
-(order-value (stations :1-4) 5)
-(order-value (stations :0-3) 15)
-(order-value (stations :2-4) 1)
-;Test Successful
-;---------------------------------------------------------------------------
+  ;TEST
+  ;Copy block below to REPL to test orders-hash-empty
 
-(defn is-order-empty [map-we-give]
-  "Helper function to validate that the given map/hashmap etc..
-  if it contains 0 orders/values false is returned else true"
-  (every? empty? [map-we-give]))
+  ;Test Successful
+  ;---------------------------------------------------------------------------
 
-;TEST
-;Copy block below to REPL to test order-empty
-(is-order-empty orders-hash-empty)                          ;true
-(is-order-empty orders-hash-empty)                          ;true
-(is-order-empty orders-hash-v1)                             ;false
-(is-order-empty orders-hash-empty)                          ;true
-(is-order-empty orders-hash-v2)                             ;false
-(is-order-empty orders-hash-empty)                          ;true
-;Test Successful
-;---------------------------------------------------------------------------
 
-(defn is-order-within-size [map-we-give]
-  "Helper function to validate that the given map/hashmap etc..
-   does not exceed the maximum of 17. true is returned if it is within the limit
-    else false"
-  (<= (count map-we-give) 17))
 
-;TEST
-;Copy block below to REPL to test order-oversize
-(is-order-within-size orders-hash-empty)                    ;true
-(is-order-within-size orders-map)                           ;true
-(is-order-within-size orders-hash-v1)                       ;true
-(is-order-within-size orders-hash-v2)                       ;true
+
+  (def stations
+    "defined stations and corresponding values"
+    {
+      :0-1 1 :0-2 2 :0-3 3 :0-4 4 ;station 0 values
+      :1-2 1 :1-3 2 :1-4 3 ;station 1 values
+      :2-3 1 :2-4 2 ;station 2 values
+      :3-4 1 ;station 3 values
+      })
+
+
+  (defn order-value [stations passengers]
+    "Functions uses the above define stations to get the order value by
+     (station stops * passenger count)"
+    (* stations passengers))
+
+  ;TEST
+  ;Copy block below to REPL to test order-value
+  (order-value (stations :1-4) 5)
+  (order-value (stations :0-3) 15)
+  (order-value (stations :2-4) 1)
+  ;Test Successful
+  ;---------------------------------------------------------------------------
+
+  (defn is-order-empty [map-we-give]
+    "Helper function to validate that the given map/hashmap etc..
+    if it contains 0 orders/values false is returned else true"
+    (every? empty? [map-we-give]))
+
+  ;TEST
+  ;Copy block below to REPL to test order-empty
+  (is-order-empty orders-hash-empty) ;true
+  (is-order-empty orders-hash-empty) ;true
+  (is-order-empty orders-hash-v1) ;false
+  (is-order-empty orders-hash-empty) ;true
+  (is-order-empty orders-hash-v2) ;false
+  (is-order-empty orders-hash-empty) ;true
+  ;Test Successful
+  ;---------------------------------------------------------------------------
+
+  (defn is-order-within-size [map-we-give]
+    "Helper function to validate that the given map/hashmap etc..
+     does not exceed the maximum of 17. true is returned if it is within the limit
+      else false"
+    (<= (count map-we-give) 17))
+
+  ;TEST
+  ;Copy block below to REPL to test order-oversize
+  (is-order-within-size orders-hash-empty) ;true
+  (is-order-within-size orders-map) ;true
+  (is-order-within-size orders-hash-v1) ;true
+  (is-order-within-size orders-hash-v2) ;true
 ;Test Successful
 ;==================================HISTORIC EFFORT==========================
 ; (ns Practice)
