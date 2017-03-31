@@ -77,12 +77,28 @@
 
 ;Test Successful
 
+;Makes an order
 (defn make-order [start end passengers]
   "Creates a map start, end (station) and number of passengers.
   Also contains a function to calculate value."
   (hash-map :start start :end end :pass passengers :value (* (- end start) passengers)))
 
+(def orders
+  "Creates mock orders"
+  (list (make-order 0 2 1)
+        (make-order 0 3 1)
+        (make-order 1 3 5)
+        (make-order 1 2 7)
+        (make-order 2 3 10)))
 
+;let people off the bus - so filter people due to come off this station
+;reduce current capacity
+;go to next station
+;see if this guy can come on
+;if he can add him on to current-pass
+;add to current capacity
+;update value
+;finish move fn - work out how to make into hash maps objects
 (defn move [current-state new-order]
   "has one state, can passenger get on?, can passenger get off? are we outside of bounds? sends states to map "
   (do
@@ -93,29 +109,39 @@
 
     current-state ()
     ))
-
+;need to have a scenario where pasng get off but no new passng board to allow function to continue processing.
+;;
+;;
+;; # == anonyamous function
+;; set == #{}
+;; % == e.g (move state %) is (move state order)
+;lmg currently only takes one state needs to deal with all states
+;need a for-loop or something that iterates through all the states that are passed in.  do first
+;applying move to all orders and need to be able to capture the possibility that no orders are made at that station
+;add an end state - if current station is = to final-station that pass back all the states as a list
+;after lmg need mapped across all states retrieving the max value.
 (defn lmg [state order]
   "has a list of states"
   (recur (map #(move state %) (filter #(= (get % :start) (get state :station)) order)) order)
 
-  (def start-state (state 0 10))
+  ;just to demo that it works
+  ;filter:- takes a predicate (if true keep)
+  (defn i-filter-stuff [state order]
+    (filter #(= (get % :start) (get state :station)) order))
+
+
+  (def start-state (make-state 1 10 4))
 
 
 
-  (def orders
-    "Creates mock orders"
-    (list (make-order 0 2 1)
-      (make-order 0 3 1)
-      (make-order 1 3 5)
-      (make-order 1 2 7)
-      (make-order 2 3 10)))
+
 
   ;(def test-order (make-order 2 3 10))
 
-  (defn state [current-station max-capacity end-station]
+  (defn make-state [current-station max-capacity end-station]
     "Defines the current state of station, capacity, route and passengers onboard. To work out passenger calculations"
     (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
-      :route cons current-station () :route-end cons end-station () :current-passengers '()))
+              :route (cons current-station '()) :route-end end-station :current-passengers '()))
 
   ;(defn solution [start end capacity ] (let [initial-state (state start capacity)])
 
@@ -167,15 +193,15 @@
 
   (def orders2
     "Defines a map of orders"
-    '{:order1 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
-      :order2 {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
-      :order3 {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
-      :order4 {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
-      :order5 {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
-      :order6 {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
-      :order7 {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
-      :order8 {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
-      :order9 {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
+    '{:order1  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
+      :order2  {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
+      :order3  {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
+      :order4  {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
+      :order5  {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
+      :order6  {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
+      :order7  {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
+      :order8  {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
+      :order9  {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
       :order10 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
       })
 
@@ -192,15 +218,15 @@
 
   (def orders-hash-v1
     "Defines a hash-map of orders. Version 1"
-    {:order1 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
-     :order2 {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
-     :order3 {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
-     :order4 {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
-     :order5 {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
-     :order6 {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
-     :order7 {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
-     :order8 {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
-     :order9 {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
+    {:order1  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
+     :order2  {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
+     :order3  {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
+     :order4  {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
+     :order5  {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
+     :order6  {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
+     :order7  {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
+     :order8  {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
+     :order9  {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
      :order10 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
      })
 
@@ -231,11 +257,11 @@
   (def stations
     "defined stations and corresponding values"
     {
-      :0-1 1 :0-2 2 :0-3 3 :0-4 4 ;station 0 values
-      :1-2 1 :1-3 2 :1-4 3 ;station 1 values
-      :2-3 1 :2-4 2 ;station 2 values
-      :3-4 1 ;station 3 values
-      })
+     :0-1 1 :0-2 2 :0-3 3 :0-4 4                            ;station 0 values
+     :1-2 1 :1-3 2 :1-4 3                                   ;station 1 values
+     :2-3 1 :2-4 2                                          ;station 2 values
+     :3-4 1                                                 ;station 3 values
+     })
 
 
   (defn order-value [stations passengers]
@@ -278,246 +304,244 @@
   (is-order-within-size orders-hash-empty) ;true
   (is-order-within-size orders-map) ;true
   (is-order-within-size orders-hash-v1) ;true
-  (is-order-within-size orders-hash-v2) ;true
-;Test Successful
-;==================================HISTORIC EFFORT==========================
-; (ns Practice)
-;(def english
-;  '{one 1, two 2, three 3, four 4})
-;
-;
-;(defn order [max-passengers end-station start-station num-orders num-passengers]
-;  (hash-map :max-pass max-passengers
-;            :end-stat end-station
-;            :start-stat start-station
-;            :num-ord num-orders
-;            :num-pass num-passengers
-;            :value (order-earnings end-station start-station num-passengers)
-;            ))
-;
-;;=> #'user/order
-;(defn order-earnings [dest-station start-station num-passengers]
-;  (* (- dest-station start-station) num-passengers))
-;;=> #'user/order-earnings
-;
-;
-;;(def order
-;;  {'(:max-passengers mp, :city-B-station bs, :num-orders 0)
-;;   '(:start-station s, :dest-station ds, :num-passengers np)})
-;;;=> #'user/order
+  (is-order-within-size orders-hash-v2)                     ;true
+  ;Test Successful
+  ;==================================HISTORIC EFFORT==========================
+  ; (ns Practice)
+  ;(def english
+  ;  '{one 1, two 2, three 3, four 4})
+  ;
+  ;
+  ;(defn order [max-passengers end-station start-station num-orders num-passengers]
+  ;  (hash-map :max-pass max-passengers
+  ;            :end-stat end-station
+  ;            :start-stat start-station
+  ;            :num-ord num-orders
+  ;            :num-pass num-passengers
+  ;            :value (order-earnings end-station start-station num-passengers)
+  ;            ))
+  ;
+  ;;=> #'user/order
+  ;(defn order-earnings [dest-station start-station num-passengers]
+  ;  (* (- dest-station start-station) num-passengers))
+  ;;=> #'user/order-earnings
+  ;
+  ;
+  ;;(def order
+  ;;  {'(:max-passengers mp, :city-B-station bs, :num-orders 0)
+  ;;   '(:start-station s, :dest-station ds, :num-passengers np)})
+  ;;;=> #'user/order
 
-;;(defn order-earnings [order]
-;;  (* (- (:dest-station, :start-station)):num-passengers))
-;;;=> #'user/order-earnings
+  ;;(defn order-earnings [order]
+  ;;  (* (- (:dest-station, :start-station)):num-passengers))
+  ;;;=> #'user/order-earnings
 
-;;(defn order-earnings [dest-station start-station num-passengers]
-;;  (* (- (:dest-station, :start-station)):num-passengers))
-;;;=> #'user/order-earnings
+  ;;(defn order-earnings [dest-station start-station num-passengers]
+  ;;  (* (- (:dest-station, :start-station)):num-passengers))
+  ;;;=> #'user/order-earnings
 
-;;(order-earnings 6 0 10)
-;;NullPointerException   clojure.lang.Numbers.ops (Numbers.java:1013)
+  ;;(order-earnings 6 0 10)
+  ;;NullPointerException   clojure.lang.Numbers.ops (Numbers.java:1013)
 
-;;(defn order-earnings [dest-station start-station num-passengers]
-;;  (* (- (dest-station, start-station)) num-passengers))
-;;;=> #'user/order-earnings
+  ;;(defn order-earnings [dest-station start-station num-passengers]
+  ;;  (* (- (dest-station, start-station)) num-passengers))
+  ;;;=> #'user/order-earnings
 
-;;(order-earnings 6 0 10)
-;;ClassCastException java.lang.Long cannot be cast to clojure.lang.IFn  user/order-earnings (form-init2149713550713844186.clj:2)
-
-
-;;(defn order-earnings [dest-station start-station num-passengers]
-;;  (* (- dest-station start-station) num-passengers))
-
-;;;=> #'user/order-earnings
-
-;;(order-earnings 6 0 10)
-;;=> 60
-;  (defn order [max-passengers end-station start-station num-orders num-passengers]
-;    (hash-map :max-pass max-passengers
-;              :end-stat end-station
-;              :start-stat start-station
-;              :num-ord num-orders
-;              :num-pass num-passengers
-;              :value (order-earnings end-station start-station num-passengers)
-;              ))
-;
-;  ;=> #'user/order
+  ;;(order-earnings 6 0 10)
+  ;;ClassCastException java.lang.Long cannot be cast to clojure.lang.IFn  user/order-earnings (form-init2149713550713844186.clj:2)
 
 
-; ; => #'user/order
-; ; => #'user/order-earnings
+  ;;(defn order-earnings [dest-station start-station num-passengers]
+  ;;  (* (- dest-station start-station) num-passengers))
+
+  ;;;=> #'user/order-earnings
+
+  ;;(order-earnings 6 0 10)
+  ;;=> 60
+  ;  (defn order [max-passengers end-station start-station num-orders num-passengers]
+  ;    (hash-map :max-pass max-passengers
+  ;              :end-stat end-station
+  ;              :start-stat start-station
+  ;              :num-ord num-orders
+  ;              :num-pass num-passengers
+  ;              :value (order-earnings end-station start-station num-passengers)
+  ;              ))
+  ;
+  ;  ;=> #'user/order
 
 
-;  (order 20 6 3 2 4)
-; ; => {:num-pass 4, :value 12, :end-stat 6, :start-stat 3, :max-pass 20, :num-ord 2}
-
-;  (list (order 20 6 3 2 4) (order 20 6 2 1 1))
-; ; =>
-;  ({:num-pass 4, :value 12, :end-stat 6, :start-stat 3, :max-pass 20, :num-ord 2}
-;    {:num-pass 1, :value 4, :end-stat 6, :start-stat 2, :max-pass 20, :num-ord 1})
-;
-;  (def testy (list (order 20 6 3 2 4) (order 20 6 2 1 1)) )
-;  ;=> #'user/testy
-;  testy
-;   =>
-;  ({:num-pass 4, :value 12, :end-stat 6, :start-stat 3, :max-pass 20, :num-ord 2}
-;    {:num-pass 1, :value 4, :end-stat 6, :start-stat 2, :max-pass 20, :num-ord 1})
-;  (map #(get % :value) testy)
-;  => (12 4)
-
-;(defn order [total-s new-p start-s end-s num-o]
-;  (hash-map :seats total-s
-;            :new-passengers new-p
-;            :start-station start-s
-;            :destination-station end-s
-;            :num-orders num-o
-;            :empty-seats (avail-seats total-s new-p)
-;            ))
+  ; ; => #'user/order
+  ; ; => #'user/order-earnings
 
 
-;(defn value [dest-station start-station num-passengers]
-;  (* (- dest-station start-station) num-passengers))
-;
-;;(defn avail-seats [total-s passng]
-;; (- total-s passng))
-;
-;(def person {:name "Steve" :age 24 :salary 7886 :company "Acme"})
+  ;  (order 20 6 3 2 4)
+  ; ; => {:num-pass 4, :value 12, :end-stat 6, :start-stat 3, :max-pass 20, :num-ord 2}
 
-;(def creamchez {"seats" "total-s"
-;                :start-station start-s
-;                :destination-station end-s
-;                :passengers passng
-;                :num-orders num-or
-;                :value (value end-s start-s passng)})
+  ;  (list (order 20 6 3 2 4) (order 20 6 2 1 1))
+  ; ; =>
+  ;  ({:num-pass 4, :value 12, :end-stat 6, :start-stat 3, :max-pass 20, :num-ord 2}
+  ;    {:num-pass 1, :value 4, :end-stat 6, :start-stat 2, :max-pass 20, :num-ord 1})
+  ;
+  ;  (def testy (list (order 20 6 3 2 4) (order 20 6 2 1 1)) )
+  ;  ;=> #'user/testy
+  ;  testy
+  ;   =>
+  ;  ({:num-pass 4, :value 12, :end-stat 6, :start-stat 3, :max-pass 20, :num-ord 2}
+  ;    {:num-pass 1, :value 4, :end-stat 6, :start-stat 2, :max-pass 20, :num-ord 1})
+  ;  (map #(get % :value) testy)
+  ;  => (12 4)
 
-;(def order [total-s start-s end-s passng num-o]
-;  {:seats total-s
-;   :start-station start-s
-;   :destination-station end-s
-;   :passengers passng
-;   :num-orders num-or
-;   :value (value end-s start-s passng)})
-
-;(def stations {"0-1" 1
-;               :0-2  2
-;               :0-3  3
-;               :0-4  4
-;
-;               :1-2  1
-;               :1-3  2
-;               :1-4  3
-;
-;               :2-3  1
-;               :2-4  2
-;
-;               :3-4  1})
-
-;(order-value station :0-3 15)
-;
-;(defn order-value [stations passengers]
-;  ;get value from station which means its turned into its value
-;  ;then you can calculate upon it
-;
-;  (* stations passengers))
+  ;(defn order [total-s new-p start-s end-s num-o]
+  ;  (hash-map :seats total-s
+  ;            :new-passengers new-p
+  ;            :start-station start-s
+  ;            :destination-station end-s
+  ;            :num-orders num-o
+  ;            :empty-seats (avail-seats total-s new-p)
+  ;            ))
 
 
-;SOMEWHERE up here get all the orders and give them a numbers
-;(defn order-value [order station passengers]
-;get maximum order number
-;(*t passengers)
-;(decrement order and recur method)
+  ;(defn value [dest-station start-station num-passengers]
+  ;  (* (- dest-station start-station) num-passengers))
+  ;
+  ;;(defn avail-seats [total-s passng]
+  ;; (- total-s passng))
+  ;
+  ;(def person {:name "Steve" :age 24 :salary 7886 :company "Acme"})
+
+  ;(def creamchez {"seats" "total-s"
+  ;                :start-station start-s
+  ;                :destination-station end-s
+  ;                :passengers passng
+  ;                :num-orders num-or
+  ;                :value (value end-s start-s passng)})
+
+  ;(def order [total-s start-s end-s passng num-o]
+  ;  {:seats total-s
+  ;   :start-station start-s
+  ;   :destination-station end-s
+  ;   :passengers passng
+  ;   :num-orders num-or
+  ;   :value (value end-s start-s passng)})
+
+  ;(def stations {"0-1" 1
+  ;               :0-2  2
+  ;               :0-3  3
+  ;               :0-4  4
+  ;
+  ;               :1-2  1
+  ;               :1-3  2
+  ;               :1-4  3
+  ;
+  ;               :2-3  1
+  ;               :2-4  2
+  ;
+  ;               :3-4  1})
+
+  ;(order-value station :0-3 15)
+  ;
+  ;(defn order-value [stations passengers]
+  ;  ;get value from station which means its turned into its value
+  ;  ;then you can calculate upon it
+  ;
+  ;  (* stations passengers))
 
 
-
-;
-;(def testValue
-;  t1(stations :0-1) :=> 1)
-;  t2(stations :0-4) :=> 4)
-;  t3(stations :2-4) :=> 2))
-
-;(def city {"Seattle"  "cloudy"
-;           "Phoenix"  "sunny"
-;           "New York" "busy"})
-;
-;
-;(defn order [total-s start-s end-s passng num-o]
-;  (hash-map :seats total-s
-;            :start-station start-s
-;            :destination-station end-s
-;            :passengers passng
-;            :num-orders num-o
-;            ;:empty-seats (avail-seats total-s passng)
-;            :value (order-value stations passng)
-;            ))
-
-;(def english {one 1, two 2, three 3, four 4})
-;; using a map as a fn2
-;; user=> ('two english); using a symbol as a fn2
-
-
-;(def testy (list (order 10 0 2 1 0)
-;                 (order 10 1 3 5 0)
-;                 (order 10 1 2 7 0)
-;                 (order 10 2 3 10 0)
-;                 (order 10 3 4 2 0)
-;                 (order 10 2 6 12 0)
-;                 (order 10 3 5 10 0)
-;                 (order 10 1 5 2 0)
-;                 (order 10 4 5 4 0)
-;                 (order 10 2 3 3 0)
-;                 ))
-
-;(select-keys {order} [:value :passengers])
-;(defn get
-;  (select-keys % {:value :passengers} [order]))
-
-
-;(map #(get % :value :passengers testy)
-
-
-;(defn avail-seats [total-s new-p]
-; (- total-s new-p))
-
-;;(defn order-earnings [dest-station start-station num-passengers]
-;;  (* (- dest-station start-station) num-passengers))
-
-;;;=> #'user/order-earnings
-
-;;(order-earnings 6 0 10)
-
-;  (defn order [max-passengers end-station start-station num-orders num-passengers]
-;    (hash-map :max-pass max-passengers
-;              :end-stat end-station
-;              :start-stat start-station
-;              :num-ord num-orders
-;              :num-pass num-passengers
-;              :value (order-earnings end-station start-station num-passengers)
-;              ))
-;
-;  ;=> #'user/order
-;  (defn order-earnings [dest-station start-station num-passengers]
-;    (* (- dest-station start-station) num-passengers))
-; ; => #'user/order
-; ; => #'user/order-earnings
-
-
-;  (order 20 6 3 2 4)
-; ; => {:num-pass 4, :value 12, :end-stat 6, :start-stat 3, :max-pass 20, :num-ord 2}
-
-;  (list (order 20 6 3 2 4) (order 20 6 2 1 1))
-; ; =>
-;  ({:num-pass 4, :value 12, :end-stat 6, :start-stat 3, :max-pass 20, :num-ord 2}
-;    {:num-pass 1, :value 4, :end-stat 6, :start-stat 2, :max-pass 20, :num-ord 1})
-;
-;; breadth first search mechanism
-;; @args start start state
-;; @args goal either a predicate to take a state determine if it is a goal
-;;            or a state equal to the goal
-;; @args LMG  legal move generator function which takes one state & returns
-;;            a list of states
-;; @args compare is a function which compares 2 states for equality,
-;;            = is used by default
-;; @args debug prints some information
+  ;SOMEWHERE up here get all the orders and give them a numbers
+  ;(defn order-value [order station passengers]
+  ;get maximum order number
+  ;(*t passengers)
+  ;(decrement order and recur method)
 
 
 
+  ;
+  ;(def testValue
+  ;  t1(stations :0-1) :=> 1)
+  ;  t2(stations :0-4) :=> 4)
+  ;  t3(stations :2-4) :=> 2))
+
+  ;(def city {"Seattle"  "cloudy"
+  ;           "Phoenix"  "sunny"
+  ;           "New York" "busy"})
+  ;
+  ;
+  ;(defn order [total-s start-s end-s passng num-o]
+  ;  (hash-map :seats total-s
+  ;            :start-station start-s
+  ;            :destination-station end-s
+  ;            :passengers passng
+  ;            :num-orders num-o
+  ;            ;:empty-seats (avail-seats total-s passng)
+  ;            :value (order-value stations passng)
+  ;            ))
+
+  ;(def english {one 1, two 2, three 3, four 4})
+  ;; using a map as a fn2
+  ;; user=> ('two english); using a symbol as a fn2
+
+
+  ;(def testy (list (order 10 0 2 1 0)
+  ;                 (order 10 1 3 5 0)
+  ;                 (order 10 1 2 7 0)
+  ;                 (order 10 2 3 10 0)
+  ;                 (order 10 3 4 2 0)
+  ;                 (order 10 2 6 12 0)
+  ;                 (order 10 3 5 10 0)
+  ;                 (order 10 1 5 2 0)
+  ;                 (order 10 4 5 4 0)
+  ;                 (order 10 2 3 3 0)
+  ;                 ))
+
+  ;(select-keys {order} [:value :passengers])
+  ;(defn get
+  ;  (select-keys % {:value :passengers} [order]))
+
+
+  ;(map #(get % :value :passengers testy)
+
+
+  ;(defn avail-seats [total-s new-p]
+  ; (- total-s new-p))
+
+  ;;(defn order-earnings [dest-station start-station num-passengers]
+  ;;  (* (- dest-station start-station) num-passengers))
+
+  ;;;=> #'user/order-earnings
+
+  ;;(order-earnings 6 0 10)
+
+  ;  (defn order [max-passengers end-station start-station num-orders num-passengers]
+  ;    (hash-map :max-pass max-passengers
+  ;              :end-stat end-station
+  ;              :start-stat start-station
+  ;              :num-ord num-orders
+  ;              :num-pass num-passengers
+  ;              :value (order-earnings end-station start-station num-passengers)
+  ;              ))
+  ;
+  ;  ;=> #'user/order
+  ;  (defn order-earnings [dest-station start-station num-passengers]
+  ;    (* (- dest-station start-station) num-passengers))
+  ; ; => #'user/order
+  ; ; => #'user/order-earnings
+
+
+  ;  (order 20 6 3 2 4)
+  ; ; => {:num-pass 4, :value 12, :end-stat 6, :start-stat 3, :max-pass 20, :num-ord 2}
+
+  ;  (list (order 20 6 3 2 4) (order 20 6 2 1 1))
+  ; ; =>
+  ;  ({:num-pass 4, :value 12, :end-stat 6, :start-stat 3, :max-pass 20, :num-ord 2}
+  ;    {:num-pass 1, :value 4, :end-stat 6, :start-stat 2, :max-pass 20, :num-ord 1})
+  ;
+  ;; breadth first search mechanism
+  ;; @args start start state
+  ;; @args goal either a predicate to take a state determine if it is a goal
+  ;;            or a state equal to the goal
+  ;; @args LMG  legal move generator function which takes one state & returns
+  ;;            a list of states
+  ;; @args compare is a function which compares 2 states for equality,
+  ;;            = is used by default
+  ;; @arg debug prints some information
+  )
