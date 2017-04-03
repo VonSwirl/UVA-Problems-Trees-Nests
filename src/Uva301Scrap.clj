@@ -1,22 +1,29 @@
-(ns Uva301)
-;;AN ORDER IN WHICH THINGS NEED TO BE DONE?
+(ns Uva301Scrap)
+;AN ORDER IN WHICH THINGS NEED TO BE DONE?
 ;Creates a list of hashmaps which hold orders
-;Filter all orders where the start station is 0 (FOR NOW)
+;Pass filter Fn all orders where the start station is 0 (FOR NOW)
+;The data from filter then needs to be passed to a fn that makes all states of the orders given and store
+;them in to a map.
+;Filter needs to do this for every orders by station until all orders are processed and all states are stored.
+;At this point the lmg needs to optimises the orders by combining orders that legally have the highest overall value.
 
-;We need to figure out the logic and what methods to use
+;BONUS<<<<< To take in user input orders, loop through till 3 and take in the values then add to hashmap. Recur to the next order and loop again
 
 
-
-
-;To take in user input orders, loop through till 3 and take in the values then add to hashmap. Recur to the next order and loop again
-
-;Makes an order
 (defn make-order [start end passengers]
+  ;Makes an order
   "Creates a map start, end (station) and number of passengers.
   Also contains a function to calculate value."
   (hash-map :start start :end end :pass passengers :value (* (- end start) passengers)))
 
+
+(def empty-orders
+  ;Makes an empty for test
+  (list ()))
+
+
 (def orders
+  ;Order Values
   "Creates mock orders"
   (list (make-order 0 2 10)
         (make-order 0 2 1)
@@ -26,28 +33,43 @@
         (make-order 2 3 10)))
 
 
+(defn make-state [current-station end-station max-capacity]
+  ;Function used to create all possible states
+  "Defines the current state of station, capacity, route and passengers onboard.
+   To work out passenger calculations"
+  (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
+            :route (cons current-station '()) :route-end end-station :current-passengers '()))
 
-(defn is-order-within-size [map-we-give]
+
+(def start-state
+
+  ;Defines the problems default start state
+
+  ;           S E CAP
+  (make-state 0 4 10))
+
+
+(defn i-filter-stuff [state order]
+  "just to demo that it works
+  filter:- takes a predicate (if true keep)"
+
+  ;Gets all orders and sorts them by station 0..1..2..3
+  ;data is then passed to make-states??? or move or lmg .....fuck know at this point
+
+  (filter #(= (get % :start) (get state :station)) order))
+
+
+(defn is-order-within-size [created-orders start-state]
   "Helper function to validate that the given map/hashmap etc..
    does not exceed the maximum of 22. true is returned if it is within the limit
     else false"
-  (if (< (count (flatten map-we-give)) 22)
-    [map-we-give]
+  (if (< (count (flatten created-orders)) 22)
+    (i-filter-stuff created-orders start-state)
     '(TooManyOrders)))
 
-;Helper to validate make-order. Returns TRUE if the data argument is compatable with the uva301 problem
-;(defn is-valid [map-we-give]
-;  "Helper function to validate that the given map/hashmap etc..
-;  if it contains 0 orders/values false is returned else true"
-;  (every? seq [map-we-give]))
-
-
-;Values used to create orders
-
-;(def empty-orders
-;  (list (make-order )))
 
 (def orders-too-large
+  ;Makes oversized order for test
   "Creates mock orders that is over the size limit"
   (is-order-within-size (list (make-order 0 2 1)
                               (make-order 0 3 1)
@@ -71,33 +93,22 @@
                               (make-order 0 3 1)
                               (make-order 1 3 5)
                               (make-order 1 2 7)
-                              (make-order 2 3 10))))
+                              (make-order 2 3 10)) nil))
 
-
-;Function used to create all possible states
-(defn make-state [current-station end-station max-capacity]
-  "Defines the current state of station, capacity, route and passengers onboard. To work out passenger calculations"
-  (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
-            :route (cons current-station '()) :route-end end-station :current-passengers '()))
-
-;newer
-;                            S E CAP
-(def start-state (make-state 0 4 10))
-
-
-;-----------------------------------------------------------------------------------------------------
-
-;let people off the bus - so filter people due to come off this station
-;reduce current capacity
-;go to next station
-;see if this guy can come on
-;if he can add him on to current-pass
-;add to current capacity
-;update value
-;finish move fn - work out how to make into hash maps objects
 
 (defn move [current-state new-order]
-  "Has one state, can passenger get on?, can passenger get off? are we outside of bounds? sends states to map "
+  "Has one state, can passenger get on?, can passenger get off?
+  are we outside of bounds? sends states to map "
+
+  ;let people off the bus - so filter people due to come off this station
+  ;reduce current capacity
+  ;go to next station
+  ;see if this guy can come on
+  ;if he can add him on to current-pass
+  ;add to current capacity
+  ;update value
+  ;finish move fn - work out how to make into hash maps objects
+
   (do
     (update current-state :station inc)
     (update current-state :current-capacity (+ (get current-state :current-capacity) (get new-order :pass)))
@@ -106,6 +117,40 @@
 
     current-state ()
     ))
+
+
+(defn legal-move-gen [state order]
+  "has a list of states"
+
+  ;need to have a scenario where pasng get off but no new passng board to allow function to continue processing.
+  ;;
+  ;;
+  ;; # == anonyamous function
+  ;; set == #{}
+  ;; % == e.g (move state %) is (move state order)
+  ;lmg currently only takes one state needs to deal with all states
+  ;need a for-loop or something that iterates through all the states that are passed in.  do first
+  ;applying move to all orders and need to be able to capture the possibility that no orders are made at that station
+  ;add an end state - if current station is = to final-station that pass back all the states as a list
+  ;after lmg need mapped across all states retrieving the max value.
+
+  (recur (map #(move state %) (filter #(= (get % :start) (get state :station)) order)) order))
+
+
+
+;------------------------------------------------------------------------------------------------------
+;Not sure if these uncommented def's below are needed at the moment....work in progress monday 3rd jay
+
+;(def test-order (make-order 2 3 10))
+
+;(defn current-check [state order]
+;  "Needs to recursively stage through the stations and implement the lmg and move function for update"
+;  (recur (map #(move state %) order)))
+
+;base-case to be used for testing
+;(defn test-start-state [state] (state 0 10))
+
+;(defn solution [start end capacity ] (let [initial-state (state start capacity)])
 
 ;(defn move
 ;  "Update after each station firstly incrementing the station mumber,
@@ -120,55 +165,17 @@
 ;    current-state ()
 ;    ))
 
-;----------------------------------------------------------------------------------------------------------------
-
-;need to have a scenario where pasng get off but no new passng board to allow function to continue processing.
-;;
-;;
-;; # == anonyamous function
-;; set == #{}
-;; % == e.g (move state %) is (move state order)
-;lmg currently only takes one state needs to deal with all states
-;need a for-loop or something that iterates through all the states that are passed in.  do first
-;applying move to all orders and need to be able to capture the possibility that no orders are made at that station
-;add an end state - if current station is = to final-station that pass back all the states as a list
-;after lmg need mapped across all states retrieving the max value.
-
-(defn lmg [state order]
-  "has a list of states"
-  (recur (map #(move state %) (filter #(= (get % :start) (get state :station)) order)) order))
-
-;----------------------------------------------------------------------------------------------------------------
-
-;just to demo that it works
-;filter:- takes a predicate (if true keep)
-
-(defn i-filter-stuff [state order]
-  (filter #(= (get % :start) (get state :station)) order))
-
-;----------------------------------------------------------------------------------------------------------------
-
-;Not sure if these uncommented def's below are needed at the moment....work in progress monday 3rd jay
-
-;(def test-order (make-order 2 3 10))
-
-;(defn current-check [state order]
-;  "Needs to recursively stage through the stations and implement the lmg and move function for update"
-;  (recur (map #(move state %) order)))
-
-;base-case to be used for testing
-;(defn test-start-state [state] (state 0 10))
-
-;(defn solution [start end capacity ] (let [initial-state (state start capacity)])
 
 ;-------END------------
 
-
-
-
-
-
 ;==================================HISTORIC EFFORT===============================================================
+;Helper to validate make-order. Returns TRUE if the data argument is compatable with the uva301 problem
+;(defn is-valid [map-we-give]
+;  "Helper function to validate that the given map/hashmap etc..
+;  if it contains 0 orders/values false is returned else true"
+;  (every? seq [map-we-give]))
+
+
 ;(def orders-map
 ;  "Defines a map of orders"
 ;  '{:station0 {:order0 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
@@ -193,29 +200,29 @@
 ;  (recur (inc orders ))
 ;  )
 
-(def i-will-break-bysize
-  "Defines a map of orders"
-  {:order1   {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
-   :order2   {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
-   :order3   {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
-   :order4   {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
-   :order5   {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
-   :order6   {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
-   :order7   {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
-   :order8   {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
-   :order9   {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
-   :order10  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
-   :order11  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
-   :order12  {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
-   :order13  {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
-   :order44  {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
-   :order35  {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
-   :order66  {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
-   :order27  {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
-   :order78  {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
-   :order79  {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
-   :order110 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
-   })
+;(def i-will-break-bysize
+;  "Defines a map of orders"
+;  {:order1   {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
+;   :order2   {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
+;   :order3   {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
+;   :order4   {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
+;   :order5   {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
+;   :order6   {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
+;   :order7   {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
+;   :order8   {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
+;   :order9   {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
+;   :order10  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
+;   :order11  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
+;   :order12  {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
+;   :order13  {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
+;   :order44  {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
+;   :order35  {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
+;   :order66  {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
+;   :order27  {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
+;   :order78  {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
+;   :order79  {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
+;   :order110 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
+;   })
 
 ;................................START   JAYS    ADDITION...................
 ;
