@@ -1,4 +1,5 @@
-(ns splice-out)
+(ns SpliceOut)
+
 (defn splice-out1 [x y lis]                                 ;  Function takes in 3 arguments (2 indexes, 1 list)
   (take y (drop x lis)))                                    ;  drop elements until x, take elements till y
 

@@ -1,3 +1,5 @@
+(ns NestedAverage)
+
 (defn tail-sum [tree]
   (number? tree) tree
   (not (seq? tree)) 0

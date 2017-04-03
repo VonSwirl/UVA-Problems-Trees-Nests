@@ -1,3 +1,5 @@
+(ns TreeAverage)
+
 (defn nested-average-denest-v1 [tree]                            ;define function takes sequence as argument
   (/ (reduce + (flatten tree)) (count (flatten tree))))          ;divide the total of the flattened tree by the number of elements in the flattened tree
 

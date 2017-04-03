@@ -1,4 +1,8 @@
+(ns Uva301)
+
 (declare breadth-search-)
+
+;-----------------------------------------------------------------------------------------------------
 
 (defn breadth-search
   [start goal lmg & {:keys [debug compare]
@@ -12,6 +16,7 @@
     (or (goal? start)
         (breadth-search- `((~start)) goal? lmg compare debug)
         )))
+
 
 (defn breadth-search- [waiting goal? lmg compare debug]
   (let [member? (fn [lis x] (some (partial compare x) lis))
@@ -36,12 +41,27 @@
                                               (cons state visited)))
                                  )))))))
 
+;-----------------------------------------------------------------------------------------------------
+
 ;Makes an order
 (defn make-order [start end passengers]
   "Creates a map start, end (station) and number of passengers.
   Also contains a function to calculate value."
   (hash-map :start start :end end :pass passengers :value (* (- end start) passengers)))
 
+(defn is-order-within-size [map-we-give]
+  "Helper function to validate that the given map/hashmap etc..
+   does not exceed the maximum of 17. true is returned if it is within the limit
+    else false"
+  (> (count map-we-give) 5))
+
+;Helper to validate make-order. Returns TRUE if the data argument is compatable with the uva301 problem
+(defn is-valid [map-we-give]
+  "Helper function to validate that the given map/hashmap etc..
+  if it contains 0 orders/values false is returned else true"
+  (every? empty? [map-we-give]) is-order-within-size [map-we-give])
+
+;Values used to create orders
 (def orders
   "Creates mock orders"
   (list (make-order 0 2 1)
@@ -49,6 +69,46 @@
         (make-order 1 3 5)
         (make-order 1 2 7)
         (make-order 2 3 10)))
+
+(def orders-too-large
+  "Creates mock orders that is over the size limit"
+  (list (make-order 0 2 1)
+        (make-order 0 3 1)
+        (make-order 1 3 5)
+        (make-order 1 2 7)
+        (make-order 0 3 1)
+        (make-order 1 3 5)
+        (make-order 1 2 7)
+        (make-order 0 3 1)
+        (make-order 1 3 5)
+        (make-order 1 2 7)
+        (make-order 0 3 1)
+        (make-order 1 3 5)
+        (make-order 1 2 7)
+        (make-order 0 3 1)
+        (make-order 1 3 5)
+        (make-order 1 2 7)
+        (make-order 0 3 1)
+        (make-order 1 3 5)
+        (make-order 1 2 7)
+        (make-order 0 3 1)
+        (make-order 1 3 5)
+        (make-order 1 2 7)
+        (make-order 2 3 10)))
+
+
+;Function used to create all possible states
+(defn make-state [current-station max-capacity end-station]
+  "Defines the current state of station, capacity, route and passengers onboard. To work out passenger calculations"
+  (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
+            :route (cons current-station '()) :route-end end-station :current-passengers '()))
+
+;newer
+;
+(def start-state (make-state 1 10 4))
+
+
+;-----------------------------------------------------------------------------------------------------
 
 ;let people off the bus - so filter people due to come off this station
 ;reduce current capacity
@@ -58,8 +118,9 @@
 ;add to current capacity
 ;update value
 ;finish move fn - work out how to make into hash maps objects
+
 (defn move [current-state new-order]
-  "has one state, can passenger get on?, can passenger get off? are we outside of bounds? sends states to map "
+  "Has one state, can passenger get on?, can passenger get off? are we outside of bounds? sends states to map "
   (do
     (update current-state :station inc)
     (update current-state :current-capacity (+ (get current-state :current-capacity) (get new-order :pass)))
@@ -68,6 +129,22 @@
 
     current-state ()
     ))
+
+;(defn move
+;  "Update after each station firstly incrementing the station mumber,
+; checking of any passengers get off\nthen on and finally going to the new order"
+;  [current-state new-order end-station]
+;
+;  (do
+;    (update current-state :station inc)
+;    (update current-state :current-capacity (- (get current-state :curent-capacity) (get end-station :pass)))
+;    (update current-state :current-capacity (+ (get current-state :current-capacity) (get new-order :pass)))
+;    (update current-state :current-passengers new-order) ()
+;    current-state ()
+;    ))
+
+;----------------------------------------------------------------------------------------------------------------
+
 ;need to have a scenario where pasng get off but no new passng board to allow function to continue processing.
 ;;
 ;;
@@ -79,54 +156,42 @@
 ;applying move to all orders and need to be able to capture the possibility that no orders are made at that station
 ;add an end state - if current station is = to final-station that pass back all the states as a list
 ;after lmg need mapped across all states retrieving the max value.
+
 (defn lmg [state order]
   "has a list of states"
-  (recur (map #(move state %) (filter #(= (get % :start) (get state :station)) order)) order)
+  (recur (map #(move state %) (filter #(= (get % :start) (get state :station)) order)) order))
 
-  ;just to demo that it works
-  ;filter:- takes a predicate (if true keep)
-  (defn i-filter-stuff [state order]
-    (filter #(= (get % :start) (get state :station)) order))
+;----------------------------------------------------------------------------------------------------------------
 
-  ;newer
-  (def start-state (make-state 1 10 4))
+;just to demo that it works
+;filter:- takes a predicate (if true keep)
 
-  (def test-start-state (state 0 10))
-  ;basecase to be used for testing
+(defn i-filter-stuff [state order]
+  (filter #(= (get % :start) (get state :station)) order))
 
+;----------------------------------------------------------------------------------------------------------------
 
+;Not sure if these uncommented def's below are needed at the moment....work in progress monday 3rd jay
 
-  ;(def test-order (make-order 2 3 10))
+;(def test-order (make-order 2 3 10))
 
-  (defn make-state [current-station max-capacity end-station]
-    "Defines the current state of station, capacity, route and passengers onboard. To work out passenger calculations"
-    (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
-              :route (cons current-station '()) :route-end end-station :current-passengers '()))
+;(defn current-check [state order]
+;  "Needs to recursively stage through the stations and implement the lmg and move function for update"
+;  (recur (map #(move state %) order)))
 
-  ;(defn solution [start end capacity ] (let [initial-state (state start capacity)])
+;base-case to be used for testing
+;(defn test-start-state [state] (state 0 10))
 
-  (defn move
-    "Update after each station firstly incrementing the station mumber,
-   checking of any passengers get off\nthen on and finally going to the new order"
-    [current-state new-order end-station]
+;(defn solution [start end capacity ] (let [initial-state (state start capacity)])
 
-    (do
-      (update current-state :station inc)
-      (update current-state :current-capacity (- (get current-state :curent-capacity) (get end-station :pass)))
-      (update current-state :current-capacity (+ (get current-state :current-capacity) (get new-order :pass)))
-      (update current-state :current-passengers new-order) ()
-      current-state ()
-      ))
-
-  (defn current-check [state]
-    "Needs to  recursively stage through the stations and implement the lmg and move function for update"
-    (recur (map #(move state %) order)))
-  )
-;==================================HISTORIC EFFORT==========================
+;-------END------------
 
 
-;...................................................
-;
+
+
+
+
+;==================================HISTORIC EFFORT===============================================================
 ;(def orders-map
 ;  "Defines a map of orders"
 ;  '{:station0 {:order0 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
@@ -150,21 +215,34 @@
 ;  (false)
 ;  (recur (inc orders ))
 ;  )
+
+(def i-will-break-bysize
+  "Defines a map of orders"
+  {:order1   {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
+   :order2   {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
+   :order3   {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
+   :order4   {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
+   :order5   {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
+   :order6   {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
+   :order7   {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
+   :order8   {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
+   :order9   {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
+   :order10  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
+   :order11  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
+   :order12  {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
+   :order13  {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
+   :order44  {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
+   :order35  {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
+   :order66  {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
+   :order27  {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
+   :order78  {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
+   :order79  {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
+   :order110 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
+   })
+
 ;................................START   JAYS    ADDITION...................
 ;
-;(def orders2
-;  "Defines a map of orders"
-;  '{:order1  {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 1}
-;    :order2  {:seats 10 :start 1 :stop 3 :passengers 5 :order-num 2}
-;    :order3  {:seats 10 :start 1 :stop 2 :passengers 7 :order-num 3}
-;    :order4  {:seats 10 :start 2 :stop 3 :passengers 10 :order-num 4}
-;    :order5  {:seats 10 :start 3 :stop 4 :passengers 2 :order-num 5}
-;    :order6  {:seats 10 :start 2 :stop 6 :passengers 12 :order-num 6}
-;    :order7  {:seats 10 :start 3 :stop 5 :passengers 10 :order-num 7}
-;    :order8  {:seats 10 :start 1 :stop 5 :passengers 2 :order-num 8}
-;    :order9  {:seats 10 :start 4 :stop 5 :passengers 4 :order-num 9}
-;    :order10 {:seats 10 :start 0 :stop 1 :passengers 1 :order-num 10}
-;    })
+
 ;
 ;;TEST
 ;;Copy block below to REPL to test lots-of-orders-map
@@ -202,9 +280,9 @@
 ;;Test Successful
 ;
 ;
-;(def orders-hash-empty
-;  "Empty hashmap for test purposes"
-;  (hash-map))
+(def i-will-break-im-empty
+  "Empty hashmap for test purposes"
+  ())
 ;
 ;;TEST
 ;;Copy block below to REPL to test orders-hash-empty
@@ -237,12 +315,7 @@
 ;(order-value (stations :2-4) 1)
 ;;Test Successful
 ;---------------------------------------------------------------------------
-;
-;(defn is-order-empty [map-we-give]
-;  "Helper function to validate that the given map/hashmap etc..
-;  if it contains 0 orders/values false is returned else true"
-;  (every? empty? [map-we-give]))
-;
+
 ;;TEST
 ;;Copy block below to REPL to test order-empty
 ;(is-order-empty orders-hash-empty) ;true
@@ -504,3 +577,4 @@
 ;; @args compare is a function which compares 2 states for equality,
 ;;            = is used by default
 ;; @arg debug prints some information
+
