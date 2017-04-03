@@ -1,47 +1,23 @@
 (ns Uva301)
+;;AN ORDER IN WHICH THINGS NEED TO BE DONE?
+;Creates a list of hashmaps which hold orders
+;Filter all orders where the start station is 0 (FOR NOW)
 
-(declare breadth-search-)
-
-;-----------------------------------------------------------------------------------------------------
-
-(defn breadth-search
-  [start goal lmg & {:keys [debug compare]
-                     :or   {debug   false
-                            compare =}}]
-  (let [goal? (if (fn? goal)
-                #(when (goal %) %)
-                #(when (= % goal) %))
-        ]
-    ;; a daft check but required just in case
-    (or (goal? start)
-        (breadth-search- `((~start)) goal? lmg compare debug)
-        )))
+;We need to figure out the logic and what methods to use
 
 
-(defn breadth-search- [waiting goal? lmg compare debug]
-  (let [member? (fn [lis x] (some (partial compare x) lis))
-        visited #{}
-        ]
-    (when debug (println 'waiting= waiting 'visited= visited))
-    (loop [waiting waiting
-           visited visited
-           ]
-      (if (empty? waiting) nil
-                           (let [[next & waiting] waiting
-                                 [state & path] next
-                                 visited? (partial member? visited)
-                                 ]
-                             (if (visited? state)
-                               (recur waiting visited)
-                               (let [succs (remove visited? (lmg state))
-                                     g (some goal? succs)
-                                     ]
-                                 (if g (reverse (cons g next))
-                                       (recur (concat waiting (map #(cons % next) succs))
-                                              (cons state visited)))
-                                 )))))))
 
-;-----------------------------------------------------------------------------------------------------
+
+;To take in user input orders, loop through till 3 and take in the values then add to hashmap. Recur to the next order and loop again
+
+(def orders
+  "Creates mock orders"
+  (list (make-order 0 2 10)
+    (make-order 0 2 1)
+    (make-order 0 3 1)
+    (make-order 1 3 5)
+    (make-order 1 2 7)
+    (make-order 2 3 10)))
 
 ;Makes an order
 (defn make-order [start end passengers]
@@ -51,61 +27,60 @@
 
 (defn is-order-within-size [map-we-give]
   "Helper function to validate that the given map/hashmap etc..
-   does not exceed the maximum of 17. true is returned if it is within the limit
+   does not exceed the maximum of 22. true is returned if it is within the limit
     else false"
-  (> (count map-we-give) 5))
+  (if(< (count (flatten map-we-give)) 22)
+    [map-we-give]
+    '(TooManyOrders)))
 
 ;Helper to validate make-order. Returns TRUE if the data argument is compatable with the uva301 problem
-(defn is-valid [map-we-give]
-  "Helper function to validate that the given map/hashmap etc..
-  if it contains 0 orders/values false is returned else true"
-  (every? empty? [map-we-give]) is-order-within-size [map-we-give])
+;(defn is-valid [map-we-give]
+;  "Helper function to validate that the given map/hashmap etc..
+;  if it contains 0 orders/values false is returned else true"
+;  (every? seq [map-we-give]))
+
 
 ;Values used to create orders
-(def orders
-  "Creates mock orders"
-  (list (make-order 0 2 1)
-        (make-order 0 3 1)
-        (make-order 1 3 5)
-        (make-order 1 2 7)
-        (make-order 2 3 10)))
+
+;(def empty-orders
+;  (list (make-order )))
 
 (def orders-too-large
   "Creates mock orders that is over the size limit"
-  (list (make-order 0 2 1)
-        (make-order 0 3 1)
-        (make-order 1 3 5)
-        (make-order 1 2 7)
-        (make-order 0 3 1)
-        (make-order 1 3 5)
-        (make-order 1 2 7)
-        (make-order 0 3 1)
-        (make-order 1 3 5)
-        (make-order 1 2 7)
-        (make-order 0 3 1)
-        (make-order 1 3 5)
-        (make-order 1 2 7)
-        (make-order 0 3 1)
-        (make-order 1 3 5)
-        (make-order 1 2 7)
-        (make-order 0 3 1)
-        (make-order 1 3 5)
-        (make-order 1 2 7)
-        (make-order 0 3 1)
-        (make-order 1 3 5)
-        (make-order 1 2 7)
-        (make-order 2 3 10)))
+  (is-order-within-size(list (make-order 0 2 1)
+    (make-order 0 3 1)
+    (make-order 1 3 5)
+    (make-order 1 2 7)
+    (make-order 0 3 1)
+    (make-order 1 3 5)
+    (make-order 1 2 7)
+    (make-order 0 3 1)
+    (make-order 1 3 5)
+    (make-order 1 2 7)
+    (make-order 0 3 1)
+    (make-order 1 3 5)
+    (make-order 1 2 7)
+    (make-order 0 3 1)
+    (make-order 1 3 5)
+    (make-order 1 2 7)
+    (make-order 0 3 1)
+    (make-order 1 3 5)
+    (make-order 1 2 7)
+    (make-order 0 3 1)
+    (make-order 1 3 5)
+    (make-order 1 2 7)
+    (make-order 2 3 10))))
 
 
 ;Function used to create all possible states
-(defn make-state [current-station max-capacity end-station]
+(defn make-state [current-station end-station max-capacity]
   "Defines the current state of station, capacity, route and passengers onboard. To work out passenger calculations"
   (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
-            :route (cons current-station '()) :route-end end-station :current-passengers '()))
+    :route (cons current-station '()) :route-end end-station :current-passengers '()))
 
 ;newer
-;
-(def start-state (make-state 1 10 4))
+;                            S E CAP
+(def start-state (make-state 0 4 10))
 
 
 ;-----------------------------------------------------------------------------------------------------
@@ -281,6 +256,10 @@
 ;
 ;
 (def i-will-break-im-empty
+  "Empty hashmap for test purposes"
+  ())
+
+(def Ayyy-clojure
   "Empty hashmap for test purposes"
   ())
 ;
@@ -577,4 +556,51 @@
 ;; @args compare is a function which compares 2 states for equality,
 ;;            = is used by default
 ;; @arg debug prints some information
+
+;(declare breadth-search-)
+
+;-----------------------------------------------------------------------------------------------------
+
+;(defn breadth-search
+;  [start goal lmg & {:keys [debug compare]
+;                     :or   {debug   false
+;                            compare =}}]
+;  (let [goal? (if (fn? goal)
+;                #(when (goal %) %)
+;                #(when (= % goal) %))
+;        ]
+;    ;; a daft check but required just in case
+;    (or (goal? start)
+;      (breadth-search- `((~start)) goal? lmg compare debug)
+;      )))
+;
+;
+;(defn breadth-search- [waiting goal? lmg compare debug]
+;  (let [member? (fn [lis x] (some (partial compare x) lis))
+;        visited #{}
+;        ]
+;    (when debug (println 'waiting= waiting 'visited= visited))
+;    (loop [waiting waiting
+;           visited visited
+;           ]
+;      (if (empty? waiting) nil
+;        (let [[next & waiting] waiting
+;              [state & path] next
+;              visited? (partial member? visited)
+;              ]
+;          (if (visited? state)
+;            (recur waiting visited)
+;            (let [succs (remove visited? (lmg state))
+;                  g (some goal? succs)
+;                  ]
+;              (if g (reverse (cons g next))
+;                (recur (concat waiting (map #(cons % next) succs))
+;                  (cons state visited)))
+;              )))))))
+
+;-----------------------------------------------------------------------------------------------------
+
+
+
+
 
