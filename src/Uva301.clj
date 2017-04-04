@@ -308,7 +308,7 @@
 ;;Test Successful
 ;---------------------------------------------------------------------------
 ;
-;(defn is-order-within-size [map-we-give]
+;(defn validate-order [map-we-give]
 ;  "Helper function to validate that the given map/hashmap etc..
 ;   does not exceed the maximum of 17. true is returned if it is within the limit
 ;    else false"
@@ -316,10 +316,10 @@
 ;
 ;;TEST
 ;;Copy block below to REPL to test order-oversize
-;(is-order-within-size orders-hash-empty) ;true
-;(is-order-within-size orders-map) ;true
-;(is-order-within-size orders-hash-v1) ;true
-;(is-order-within-size orders-hash-v2)                     ;true
+;(validate-order orders-hash-empty) ;true
+;(validate-order orders-map) ;true
+;(validate-order orders-hash-v1) ;true
+;(validate-order orders-hash-v2)                     ;true
 ;;Test Successful
 ; (ns Practice)
 ;(def english

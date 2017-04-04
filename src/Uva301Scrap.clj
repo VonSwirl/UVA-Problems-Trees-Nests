@@ -35,6 +35,7 @@
 
 (defn make-state [current-station end-station max-capacity]
   ;Function used to create all possible states
+  ;
   "Defines the current state of station, capacity, route and passengers onboard.
    To work out passenger calculations"
   (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
@@ -48,68 +49,19 @@
   ;           S E CAP
   (make-state 0 4 10))
 
-
-(defn i-filter-stuff [state order]
-  "just to demo that it works
-  filter:- takes a predicate (if true keep)"
-
-  ;Gets all orders and sorts them by station 0..1..2..3
-  ;data is then passed to make-states??? or move or lmg .....fuck know at this point
-
-  (filter #(= (get % :start) (get state :station)) order))
-
-
-(defn is-order-within-size [created-orders start-state]
-  "Helper function to validate that the given map/hashmap etc..
-   does not exceed the maximum of 22. true is returned if it is within the limit
-    else false"
-  (if (< (count (flatten created-orders)) 22)
-    (i-filter-stuff created-orders start-state)
-    '(TooManyOrders)))
-
-
-(def orders-too-large
-  ;Makes oversized order for test
-  "Creates mock orders that is over the size limit"
-  (is-order-within-size (list (make-order 0 2 1)
-                              (make-order 0 3 1)
-                              (make-order 1 3 5)
-                              (make-order 1 2 7)
-                              (make-order 0 3 1)
-                              (make-order 1 3 5)
-                              (make-order 1 2 7)
-                              (make-order 0 3 1)
-                              (make-order 1 3 5)
-                              (make-order 1 2 7)
-                              (make-order 0 3 1)
-                              (make-order 1 3 5)
-                              (make-order 1 2 7)
-                              (make-order 0 3 1)
-                              (make-order 1 3 5)
-                              (make-order 1 2 7)
-                              (make-order 0 3 1)
-                              (make-order 1 3 5)
-                              (make-order 1 2 7)
-                              (make-order 0 3 1)
-                              (make-order 1 3 5)
-                              (make-order 1 2 7)
-                              (make-order 2 3 10)) nil))
-
-
+;----------------------------------------------------------------------------------------
+;logically this
+;let people off the bus - so filter people due to come off this station
+;reduce current capacity
+;go to next station
+;see if this guy can come on
+;if he can add him on to current-pass
+;add to current capacity
+;update value
+;finish move fn - work out how to make into hash maps objects
 (defn move [current-state new-order]
   "Has one state, can passenger get on?, can passenger get off?
   are we outside of bounds? sends states to map "
-
-  ;logically this
-  ;let people off the bus - so filter people due to come off this station
-  ;reduce current capacity
-  ;go to next station
-  ;see if this guy can come on
-  ;if he can add him on to current-pass
-  ;add to current capacity
-  ;update value
-  ;finish move fn - work out how to make into hash maps objects
-
   (do
     (update current-state :station inc)
     (update current-state :current-capacity (+ (get current-state :current-capacity) (get new-order :pass)))
@@ -118,6 +70,56 @@
 
     current-state ()
     ))
+
+(defn i-filter-stuff [state valid-order]
+  "just to demo that it works
+  filter:- takes a predicate (if true keep)"
+
+  ;Gets all orders and sorts them by station 0..1..2..3
+  ;data is then passed to make-states??? or move or lmg .....fuck know at this point
+
+  (filter #(= (get % :start) (get state :station)) valid-order)
+  (move state valid-order))
+
+
+(defn validate-order [created-orders start-state]
+  "Helper function to validate that the given map/hashmap etc..
+   does not exceed the maximum of 22. true is returned if it is within the limit
+    else false"
+  (if (< (count (flatten created-orders)) 22)
+    (i-filter-stuff start-state created-orders)
+    '(TooManyOrders)))
+
+
+(def orders-too-large
+  ;Makes oversized order for test
+  "Creates mock orders that is over the size limit"
+  (validate-order (list (make-order 0 2 1)
+                        (make-order 0 3 1)
+                        (make-order 1 3 5)
+                        (make-order 1 2 7)
+                        (make-order 0 3 1)
+                        (make-order 1 3 5)
+                        (make-order 1 2 7)
+                        (make-order 0 3 1)
+                        (make-order 1 3 5)
+                        (make-order 1 2 7)
+                        (make-order 0 3 1)
+                        (make-order 1 3 5)
+                        (make-order 1 2 7)
+                        (make-order 0 3 1)
+                        (make-order 1 3 5)
+                        (make-order 1 2 7)
+                        (make-order 0 3 1)
+                        (make-order 1 3 5)
+                        (make-order 1 2 7)
+                        (make-order 0 3 1)
+                        (make-order 1 3 5)
+                        (make-order 1 2 7)
+                        (make-order 2 3 10)) nil))
+
+
+
 
 
 (defn legal-move-gen [state order]
@@ -316,7 +318,7 @@
 ;;Test Successful
 ;---------------------------------------------------------------------------
 ;
-;(defn is-order-within-size [map-we-give]
+;(defn validate-order [map-we-give]
 ;  "Helper function to validate that the given map/hashmap etc..
 ;   does not exceed the maximum of 17. true is returned if it is within the limit
 ;    else false"
@@ -324,10 +326,10 @@
 ;
 ;;TEST
 ;;Copy block below to REPL to test order-oversize
-;(is-order-within-size orders-hash-empty) ;true
-;(is-order-within-size orders-map) ;true
-;(is-order-within-size orders-hash-v1) ;true
-;(is-order-within-size orders-hash-v2)                     ;true
+;(validate-order orders-hash-empty) ;true
+;(validate-order orders-map) ;true
+;(validate-order orders-hash-v1) ;true
+;(validate-order orders-hash-v2)                     ;true
 ;;Test Successful
 ; (ns Practice)
 ;(def english

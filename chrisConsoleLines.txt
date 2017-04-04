@@ -1,6 +1,4 @@
 
-(+ 1 1)
-=> 2
 (defn make-order [start end passengers]
   "Creates a map start, end (station) and number of passengers.
   Also contains a function to calculate value."
