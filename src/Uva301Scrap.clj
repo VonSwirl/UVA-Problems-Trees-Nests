@@ -100,6 +100,7 @@
   "Has one state, can passenger get on?, can passenger get off?
   are we outside of bounds? sends states to map "
 
+  ;logically this
   ;let people off the bus - so filter people due to come off this station
   ;reduce current capacity
   ;go to next station
