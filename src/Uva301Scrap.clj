@@ -62,14 +62,30 @@
   ;add to current capacity
   ;update value
   ;finish move fn - work out how to make into hash maps objects
-  (do
-    (update current-state :station inc)
-    (update current-state :current-capacity (+ (get current-state :current-capacity) (get new-order :pass)))
-    (update current-state :current-passengers new-order)
-    ()
 
-    current-state ()
-    ))
+  (let [current-station (get current-state :station)
+        newStation (inc current-station)
+        people-getting-off (filter #(= (get % :end) current-station) (get current-state :current-passengers))
+        people-still-on  (filter #(not (= (get % :end) current-station)) (get current-state :current-passengers))
+        reduced-capacity (reduce  #(+ %1 (get %2 :pass)) 0 people-getting-off)
+        capacity-with-people-taken-off (- (get current-state :current-capacity) reduced-capacity)
+        will-take-order (if (<= (+ capacity-with-people-taken-off (get new-order :pass))  (get current-state :max-capacity)) true false)
+        final-capacity  (if (true? will-take-order) (+ capacity-with-people-taken-off (get new-order :pass)) capacity-with-people-taken-off)
+        value (if (true? will-take-order) (+ (get current-state :value) (get new-order :value)) (get current-state :value))
+        current-route (if (true? will-take-order) (conj (get current-state :route) new-order) (get current-state :route))
+        current-pass (if (true? will-take-order) (conj  people-still-on  new-order) people-still-on)
+        ]
+      ;for if true? is there a better way to do this?
+
+(hash-map :station newStation
+          :value value
+          :current-capacity final-capacity
+          :max-capacity (get current-state :max-capacity)
+          :route current-route
+          :route-end (get current-state :route-end)
+          :current-passengers current-pass)
+)
+    )
 
 
 (defn i-filter-stuff [state valid-order]
@@ -92,6 +108,13 @@
     (i-filter-stuff start-state created-orders)
     '(TooManyOrders)))
 
+
+(defn legal-move-gen [states order]
+  "has a list of states"
+  (let [fir (first states)]
+  (if (= (get fir :station) (get fir :route-end) ) states
+  (let [new-states (for [x states] (map #(move x %) (filter #(= (get % :start) (get x :station)) order)))]
+    (recur (apply concat new-states) order)))))
 
 (def orders-too-large
   ;Makes oversized order for test
@@ -121,8 +144,6 @@
                         (make-order 2 3 10)) nil))
 
 
-(defn legal-move-gen [state order]
-  "has a list of states"
 
   ;need to have a scenario where pasng get off but no new passng board to allow function to continue processing.
   ;;
@@ -136,7 +157,7 @@
   ;add an end state - if current station is = to final-station that pass back all the states as a list
   ;after lmg need mapped across all states retrieving the max value.
 
-  (recur (map #(move state %) (filter #(= (get % :start) (get state :station)) order)) order))
+
 
 
 
