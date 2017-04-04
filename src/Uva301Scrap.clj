@@ -1,13 +1,11 @@
 (ns Uva301Scrap)
-;AN ORDER IN WHICH THINGS NEED TO BE DONE?
-;Creates a list of hashmaps which hold orders
-;Pass filter Fn all orders where the start station is 0 (FOR NOW)
-;The data from filter then needs to be passed to a fn that makes all states of the orders given and store
-;them in to a map.
-;Filter needs to do this for every orders by station until all orders are processed and all states are stored.
-;At this point the lmg needs to optimises the orders by combining orders that legally have the highest overall value.
-
-;BONUS<<<<< To take in user input orders, loop through till 3 and take in the values then add to hashmap. Recur to the next order and loop again
+;TO-DO
+;Test harness, test each method and maybe single values from each method.  !!!;assert (= (get (move state )) :current-capacity)!!!
+;Final overall check of the functions - this includes OOB
+;Do we need validation for over 22 orders?
+;
+;Manually work through the problem and check what values we get
+;Look at the route, why is it not conjing on all of the the other orders
 
 
 (defn make-order [start end passengers]
@@ -41,43 +39,30 @@
   (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
             :route (cons current-station '()) :route-end end-station :current-passengers '()))
 
-
 (def start-state
-
   ;Defines the problems default start state
-
   ;           S E CAP
   (make-state 0 4 10))
 
 
 (defn move [current-state new-order]
-  "Has one state, can passenger get on?, can passenger get off?
-  are we outside of bounds? sends states to map "
-  ;logically this
-  ;let people off the bus - so filter people due to come off this station
-  ;reduce current capacity
-  ;go to next station
-  ;see if this guy can come on
-  ;if he can add him on to current-pass
-  ;add to current capacity
-  ;update value
-  ;finish move fn - work out how to make into hash maps objects
 
   (let [current-station (get current-state :station)
-        newStation (inc current-station)
-        people-getting-off (filter #(= (get % :end) current-station) (get current-state :current-passengers))
-        people-still-on  (filter #(not (= (get % :end) current-station)) (get current-state :current-passengers))
-        reduced-capacity (reduce  #(+ %1 (get %2 :pass)) 0 people-getting-off)
-        capacity-with-people-taken-off (- (get current-state :current-capacity) reduced-capacity)
-        will-take-order (if (<= (+ capacity-with-people-taken-off (get new-order :pass))  (get current-state :max-capacity)) true false)
-        final-capacity  (if (true? will-take-order) (+ capacity-with-people-taken-off (get new-order :pass)) capacity-with-people-taken-off)
-        value (if (true? will-take-order) (+ (get current-state :value) (get new-order :value)) (get current-state :value))
-        current-route (if (true? will-take-order) (conj (get current-state :route) new-order) (get current-state :route))
-        current-pass (if (true? will-take-order) (conj  people-still-on  new-order) people-still-on)
+        newStation (inc current-station) ;increments through the stations
+        people-getting-off (filter #(= (get % :end) current-station) (get current-state :current-passengers)) ;Filters where the end station is equal to the current station, if it is it will then get the current passengers
+        people-still-on  (filter #(not (= (get % :end) current-station)) (get current-state :current-passengers)) ;Filters where the end station is not equal to the current station passngers will be staying on so get the current passengers
+        reduced-capacity (reduce  #(+ %1 (get %2 :pass)) 0 people-getting-off) ;Start at 0 then adds the people that are getting off so it increases our capacity so that more people can get on
+        capacity-with-people-taken-off (- (get current-state :current-capacity) reduced-capacity) ;Gets the current capacity and reduced then takes them off leaving the current capacity when the train has dropped people off
+        ;(TEST?) Can if and true/false be removed because it will just automatically do that
+        will-take-order (if (<= (+ capacity-with-people-taken-off (get new-order :pass))  (get current-state :max-capacity)) true false) ;If the capacity that is currently on the train + the new orders passengers is less than the max capacity it is true. Else false
+        final-capacity  (if (true? will-take-order) (+ capacity-with-people-taken-off (get new-order :pass)) capacity-with-people-taken-off) ;If true set accept the order and add the current capacity with the new order passengers
+        value (if (true? will-take-order) (+ (get current-state :value) (get new-order :value)) (get current-state :value)) ;If order taken update the value
+        current-route (if (true? will-take-order) (conj (get current-state :route) new-order) (get current-state :route)) ;If order taken conj the current route with the new order route, create a long list of the route it has taken
+        current-pass (if (true? will-take-order) (conj  people-still-on  new-order) people-still-on) ;If order taken add the current passengers to the new order passengers
         ]
-      ;for if true? is there a better way to do this?
+        ;for if true? is there a better way to do this?
 
-(hash-map :station newStation
+(hash-map :station newStation ;Put all the values into a hashmap so that they can be seen and used
           :value value
           :current-capacity final-capacity
           :max-capacity (get current-state :max-capacity)
@@ -87,78 +72,98 @@
 )
     )
 
-
-(defn i-filter-stuff [state valid-order]
-  "just to demo that it works
-  filter:- takes a predicate (if true keep)"
-
-  ;Gets all orders and sorts them by station 0..1..2..3
-  ;data is then passed to make-states??? or move or lmg .....fuck know at this point
-
-  (filter #(= (get % :start) (get state :station)) valid-order)
-  (make-state state valid-order)
-  )
-
-
-(defn validate-order [created-orders start-state]
-  "Helper function to validate that the given map/hashmap etc..
-   does not exceed the maximum of 22. true is returned if it is within the limit
-    else false"
-  (if (< (count (flatten created-orders)) 22)
-    (i-filter-stuff start-state created-orders)
-    '(TooManyOrders)))
-
+;assert (= (get (move state )) :current-capacity)
 
 (defn legal-move-gen [states order]
   "has a list of states"
   (let [fir (first states)]
-  (if (= (get fir :station) (get fir :route-end) ) states
-  (let [new-states (for [x states] (map #(move x %) (filter #(= (get % :start) (get x :station)) order)))]
-    (recur (apply concat new-states) order)))))
-
-(def orders-too-large
-  ;Makes oversized order for test
-  "Creates mock orders that is over the size limit"
-  (validate-order (list (make-order 0 2 1)
-                        (make-order 0 3 1)
-                        (make-order 1 3 5)
-                        (make-order 1 2 7)
-                        (make-order 0 3 1)
-                        (make-order 1 3 5)
-                        (make-order 1 2 7)
-                        (make-order 0 3 1)
-                        (make-order 1 3 5)
-                        (make-order 1 2 7)
-                        (make-order 0 3 1)
-                        (make-order 1 3 5)
-                        (make-order 1 2 7)
-                        (make-order 0 3 1)
-                        (make-order 1 3 5)
-                        (make-order 1 2 7)
-                        (make-order 0 3 1)
-                        (make-order 1 3 5)
-                        (make-order 1 2 7)
-                        (make-order 0 3 1)
-                        (make-order 1 3 5)
-                        (make-order 1 2 7)
-                        (make-order 2 3 10)) nil))
+    (if (= (get fir :station) (get fir :route-end) ) states ;When start and finish are the same, so the orders have ended
+     (let [new-states (for [x states] (map #(move x %) (filter #(= (get % :start) (get x :station)) order)))] ;for each state map all of the legal moves that can be done
+     (recur (apply concat new-states) order))))) ;Concatinating all of the different station states into one large list
 
 
 
-  ;need to have a scenario where pasng get off but no new passng board to allow function to continue processing.
-  ;;
-  ;;
-  ;; # == anonyamous function
-  ;; set == #{}
-  ;; % == e.g (move state %) is (move state order)
-  ;lmg currently only takes one state needs to deal with all states
-  ;need a for-loop or something that iterates through all the states that are passed in.  do first
-  ;applying move to all orders and need to be able to capture the possibility that no orders are made at that station
-  ;add an end state - if current station is = to final-station that pass back all the states as a list
-  ;after lmg need mapped across all states retrieving the max value.
+;==================================HISTORIC EFFORT===============================================================
+
+;logically this
+;let people off the bus - so filter people due to come off this station
+;reduce current capacity
+;go to next station
+;see if this guy can come on
+;if he can add him on to current-pass
+;add to current capacity
+;update value
+;finish move fn - work out how to make into hash maps objects
 
 
 
+;
+;(defn i-filter-stuff [state valid-order]
+;  "just to demo that it works
+;  filter:- takes a predicate (if true keep)"
+;
+;  ;Gets all orders and sorts them by station 0..1..2..3
+;  ;data is then passed to make-states??? or move or lmg
+;
+;  (filter #(= (get % :start) (get state :station)) valid-order)
+;  (make-state state valid-order)
+;  )
+
+;
+;(defn validate-order [created-orders start-state]
+;  "Helper function to validate that the given map/hashmap etc..
+;   does not exceed the maximum of 22. true is returned if it is within the limit
+;    else false"
+;  (if (< (count (flatten created-orders)) 22)
+;    (i-filter-stuff start-state created-orders)
+;    '(TooManyOrders)))
+
+
+
+;
+;(def orders-too-large
+;  ;Makes oversized order for test
+;  "Creates mock orders that is over the size limit"
+;  (validate-order (list (make-order 0 2 1)
+;                        (make-order 0 3 1)
+;                        (make-order 1 3 5)
+;                        (make-order 1 2 7)
+;                        (make-order 0 3 1)
+;                        (make-order 1 3 5)
+;                        (make-order 1 2 7)
+;                        (make-order 0 3 1)
+;                        (make-order 1 3 5)
+;                        (make-order 1 2 7)
+;                        (make-order 0 3 1)
+;                        (make-order 1 3 5)
+;                        (make-order 1 2 7)
+;                        (make-order 0 3 1)
+;                        (make-order 1 3 5)
+;                        (make-order 1 2 7)
+;                        (make-order 0 3 1)
+;                        (make-order 1 3 5)
+;                        (make-order 1 2 7)
+;                        (make-order 0 3 1)
+;                        (make-order 1 3 5)
+;                        (make-order 1 2 7)
+;                        (make-order 2 3 10)) nil))
+
+
+
+;need to have a scenario where pasng get off but no new passng board to allow function to continue processing.
+;;
+;;
+;; # == anonyamous function
+;; set == #{}
+;; % == e.g (move state %) is (move state order)
+;lmg currently only takes one state needs to deal with all states
+;need a for-loop or something that iterates through all the states that are passed in.  do first
+;applying move to all orders and need to be able to capture the possibility that no orders are made at that station
+;add an end state - if current station is = to final-station that pass back all the states as a list
+;after lmg need mapped across all states retrieving the max value.
+
+
+;------------------------------------------------Stuff that doesnt work ------------------------------------------------
 
 
 ;------------------------------------------------------------------------------------------------------
@@ -189,9 +194,9 @@
 ;    ))
 
 
-;-------END------------
 
-;==================================HISTORIC EFFORT===============================================================
+
+
 ;Helper to validate make-order. Returns TRUE if the data argument is compatable with the uva301 problem
 ;(defn is-valid [map-we-give]
 ;  "Helper function to validate that the given map/hashmap etc..
