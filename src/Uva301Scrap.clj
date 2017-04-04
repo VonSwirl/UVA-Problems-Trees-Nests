@@ -49,19 +49,19 @@
   ;           S E CAP
   (make-state 0 4 10))
 
-;----------------------------------------------------------------------------------------
-;logically this
-;let people off the bus - so filter people due to come off this station
-;reduce current capacity
-;go to next station
-;see if this guy can come on
-;if he can add him on to current-pass
-;add to current capacity
-;update value
-;finish move fn - work out how to make into hash maps objects
+
 (defn move [current-state new-order]
   "Has one state, can passenger get on?, can passenger get off?
   are we outside of bounds? sends states to map "
+  ;logically this
+  ;let people off the bus - so filter people due to come off this station
+  ;reduce current capacity
+  ;go to next station
+  ;see if this guy can come on
+  ;if he can add him on to current-pass
+  ;add to current capacity
+  ;update value
+  ;finish move fn - work out how to make into hash maps objects
   (do
     (update current-state :station inc)
     (update current-state :current-capacity (+ (get current-state :current-capacity) (get new-order :pass)))
@@ -71,6 +71,7 @@
     current-state ()
     ))
 
+
 (defn i-filter-stuff [state valid-order]
   "just to demo that it works
   filter:- takes a predicate (if true keep)"
@@ -79,7 +80,8 @@
   ;data is then passed to make-states??? or move or lmg .....fuck know at this point
 
   (filter #(= (get % :start) (get state :station)) valid-order)
-  (move state valid-order))
+  (make-state state valid-order)
+  )
 
 
 (defn validate-order [created-orders start-state]
@@ -117,9 +119,6 @@
                         (make-order 1 3 5)
                         (make-order 1 2 7)
                         (make-order 2 3 10)) nil))
-
-
-
 
 
 (defn legal-move-gen [state order]
