@@ -1,6 +1,5 @@
 (ns Uva301)
 
-
 (defn make-order [start end passengers]
   ;Makes an order
   "Creates a map start, end (station) and number of passengers.
@@ -9,21 +8,23 @@
 
 
 (def empty-orders
-  ;Makes an empty for test
+  "Empty list for test purposes"
   (list ()))
 
 
 (def orders
-  ;Order Values
   "Creates mock orders"
   (list (make-order 0 2 10)                                 ;20
         (make-order 0 2 1)                                  ;2
         (make-order 0 3 1)                                  ;3
         (make-order 1 3 5)                                  ;10
         (make-order 1 2 7)                                  ;7
-        (make-order 2 3 10)))                               ;10
+        (make-order 2 3 10)                                 ;10
+        ))
 
-(def order2
+
+(def orders2
+  "Creates more mock orders"
   (list (make-order 0 2 4)
         (make-order 0 1 7)
         (make-order 1 3 5)
@@ -38,63 +39,68 @@
 
 
 (defn make-state [current-station end-station max-capacity]
-  ;Function used to create all possible states
-  ;
   "Defines the current state of station, capacity, route and passengers onboard.
    To work out passenger calculations"
   (hash-map :station current-station :value 0 :current-capacity 0 :max-capacity max-capacity
             :route (cons current-station '()) :route-end end-station :current-passengers '()))
 
+
 (def start-state
-  ;Defines the problems default start state
-  ;           S E CAP
+  "Defines the problem default start state"
   (make-state 0 4 10))
 
 
 (defn move [c-state new-o]
-
+  "Moves through the orders updating the current status accepting or
+  rejecting orders subject to define conditions. Stores accept order states in hash map"
   (let [c-station (get c-state :station)
-        n-station (inc c-station)                           ;increments through the stations
-        p-off (filter #(= (get % :end) c-station) (get c-state :current-passengers)) ;Filters where the end station is equal to the current station, if it is it will then get the current passengers
-        remaining-p (filter #(not (= (get % :end) c-station)) (get c-state :current-passengers)) ;Filters where the end station is not equal to the current station passngers will be staying on so get the current passengers
-        reduce-cap (reduce #(+ %1 (get %2 :pass)) 0 p-off)  ;Start at 0 then adds the people that are getting off so it increases our capacity so that more people can get on
-        dep-cap (- (get c-state :current-capacity) reduce-cap) ;Gets the current capacity and reduced then takes them off leaving the current capacity when the train has dropped people off
-        ;(TEST?) Can if and true/false be removed because it will just automatically do that
-        accept-o (if (<= (+ dep-cap (get new-o :pass)) (get c-state :max-capacity)) true false) ;If the capacity that is currently on the train + the new orders passengers is less than the max capacity it is true. Else false
-        final-cap (if (true? accept-o) (+ dep-cap (get new-o :pass)) dep-cap) ;If true set accept the order and add the current capacity with the new order passengers
-        val (if (true? accept-o) (+ (get c-state :value) (get new-o :value)) (get c-state :value)) ;If order taken update the value
-        c-route (if (true? accept-o) (conj (get c-state :route) new-o) (get c-state :route)) ;If order taken conj the current route with the new order route, create a long list of the route it has taken
-        c-pass (if (true? accept-o) (conj remaining-p new-o) remaining-p) ;If order taken add the current passengers to the new order passengers
+        n-station (inc c-station)
+        p-off (filter #(= (get % :end) c-station) (get c-state :current-passengers))
+        remaining-p (filter #(not (= (get % :end) c-station)) (get c-state :current-passengers))
+        reduce-cap (reduce #(+ %1 (get %2 :pass)) 0 p-off)
+        dep-cap (- (get c-state :current-capacity) reduce-cap)
+        accept-o (if (<= (+ dep-cap (get new-o :pass)) (get c-state :max-capacity)) true false)
+        final-cap (if (true? accept-o) (+ dep-cap (get new-o :pass)) dep-cap)
+        val (if (true? accept-o) (+ (get c-state :value) (get new-o :value)) (get c-state :value))
+        c-route (if (true? accept-o) (conj (get c-state :route) new-o) (get c-state :route))
+        c-pass (if (true? accept-o) (conj remaining-p new-o) remaining-p)
         ]
 
-    (hash-map :station n-station                            ;Put all the values into a hashmap so that they can be seen and used
+    (hash-map :station n-station
               :value val
               :current-capacity final-cap
               :max-capacity (get c-state :max-capacity)
               :route c-route
               :route-end (get c-state :route-end)
-              :current-passengers c-pass)
-    )
-  )
+              :current-passengers c-pass)))
 
-;assert (= (get (move state )) :current-capacity)
 
 (defn lmg [states order]
-  "has a list of states"
+  "For each state maps all of the legal moves that can be reached.
+  Concatinating all of the different station states into one large list"
   (let [fir (first states)]
     (if (= (get fir :station)
            (get fir :route-end))
-      states                                                ;When start and finish are the same, so the orders have ended
-      (let [new-states (for [x states] (map #(move x %) (filter #(= (get % :start) (get x :station)) order)))] ;for each state map all of the legal moves that can be done
-        (recur (apply concat new-states) order)))))         ;Concatinating all of the different station states into one large list
+      states
+      (let [new-states (for [x states] (map #(move x %) (filter #(= (get % :start) (get x :station)) order)))]
+        (recur (apply concat new-states) order)))))
 
 
+(defn max-val [state order]
+  "Pulls values produced by the legal move generator. Values are mapped for comparison"
+  (let [end (lmg (list (state)) order)]
+    (map #(select-keys % [:value]) end))
+  )
 
 
-
+;BELOW IS WHAT NEEDS DOING==============================================================================================
+; test harness completion
+; test data to break
+; need to get the max value from the map of values
+;Create a test harness that will check each of the values indivually
 
 ;---------TESTING-----------
-
+; assert (= (get (move state )) :current-capacity)
 ;(lmg (list (make-state 0 3 10)) orders)
 ;(lmg (list (make-state 0 4 10)) order2)
 
@@ -105,11 +111,6 @@
 ;    (map #(select-keys % [:value]) end)
 ;    ))
 
-(defn max-val [state order]
-  (let [end (lmg (list (state)) order)]
-    (map #(select-keys % [:value]) end))
-  )
-
 (def tests '([t1 ((max-val #(make-state 0 3 10) orders)
                    => ({:value 30} {:value 30} {:value 12} {:value 19} {:value 13} {:value 10}))]
               [t1 (first ((max-val #(make-state 0 3 10) orders))) => {:value 30}]
@@ -118,13 +119,10 @@
 
               ))
 
-
 (def tests '([t1 (+ 2 2) => 4]
               [t2 (- 3 2) => 'banana]
               [t3 (first '(cat bat rat)) => 'cat]
               [t4 (first '(cat bat rat)) => 'sat]))
-
-
 
 ;(def data [{:date1 "20131007", :data "object1", :counter 1000}
 ;           {:date1 "20131007", :data "object2", :counter 50}
@@ -142,7 +140,6 @@
 ;  (let [end (legal-move-gen (list (state)) order)]
 ;    end))
 
-;Create a test harness that will check each of the values indivually
 
 
 ;Old shit
@@ -160,6 +157,18 @@
 ;(defn max-val [state order]
 ;  (let [end (legal-move-gen (list (state)) order)]
 ;    (first end)))
+
+
+
+
+
+
+
+
+
+
+
+
 
 ;==================================HISTORIC EFFORT===============================================================
 ;(def orders-map
