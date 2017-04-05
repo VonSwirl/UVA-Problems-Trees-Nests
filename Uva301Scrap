@@ -1,4 +1,4 @@
-(ns Uva301Scrap)
+
 ;TO-DO
 ;Test harness, test each method and maybe single values from each method.  !!!;assert (= (get (move state )) :current-capacity)!!!
 ;Final overall check of the functions - this includes OOB
